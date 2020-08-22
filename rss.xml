@@ -1,0 +1,941 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[kevin wang's blog]]></title><description><![CDATA[這是凱文的部落格.]]></description><link>https://kawwenwans.github.io</link><generator>GatsbyJS</generator><lastBuildDate>Sat, 22 Aug 2020 10:44:40 GMT</lastBuildDate><item><title><![CDATA[佈署gatsby專案到github page]]></title><description><![CDATA[本文會提到的東西 套用現成blog 樣板 佈署到github-page 透過travis-ci 自動佈屬 套用 Blog Starter Gatsby.js 有很多現成的blog starter， 有些Starter真的很不錯， 但我還是決定用官方的blog-starter…]]></description><link>https://kawwenwans.github.io/deploy-gatsby-blog-note/</link><guid isPermaLink="false">https://kawwenwans.github.io/deploy-gatsby-blog-note/</guid><pubDate>Sat, 22 Aug 2020 08:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;本文會提到的東西&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;套用現成blog 樣板&lt;/li&gt;
+&lt;li&gt;佈署到github-page&lt;/li&gt;
+&lt;li&gt;透過travis-ci 自動佈屬&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;套用 Blog Starter&lt;/h2&gt;
+&lt;p&gt;Gatsby.js 有很多現成的blog starter，&lt;br&gt;
+有些Starter真的很不錯，&lt;br&gt;
+但我還是決定用官方的blog-starter起手，&lt;br&gt;
+再依需求改部落格。  &lt;/p&gt;
+&lt;p&gt;一樣從gatsby new 起手&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;gatsby new my-blog-starter https://github.com/gatsbyjs/gatsby-starter-blog&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;首先要調整 &lt;strong&gt;gatsby-config.js&lt;/strong&gt; 內的樣版內容，&lt;br&gt;
+如果像我一樣移除掉twitter的話，&lt;br&gt;
+照著錯誤訊息將剩餘有引用到的地方一併移除即可，&lt;br&gt;
+要改的檔案分別是&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;.
+└── src
+    ├── bio.js
+    └── seo.js&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;文章都會放在 &lt;strong&gt;blog&lt;/strong&gt; 資料夾，&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;.
+└── content
+    └── blog
+        └── 你文章的網址
+            └── index.md&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;hr&gt;
+&lt;h2&gt;佈屬網站&lt;/h2&gt;
+&lt;p&gt;gatsby產生的是靜態網站，&lt;br&gt;
+只需要host可以提供靜態網頁瀏覽的功能就可以了，&lt;br&gt;
+我選擇使用 github page來host 部落格。&lt;/p&gt;
+&lt;p&gt;首先專案安裝 &lt;strong&gt;gh-pages&lt;/strong&gt; 套件來產生發佈頁&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;npm install gh-pages --save-dev&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;並新增一個指令&lt;br&gt;
+&lt;strong&gt;package.json&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;json&quot;&gt;&lt;pre class=&quot;language-json&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;scripts&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;deploy&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;gatsby build &amp;amp;&amp;amp; gh-pages -d public -b master&quot;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;在github也要設定&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;github 上建立一個用來發佈用到的repo，&lt;/li&gt;
+&lt;li&gt;到setting設定一個並選擇一個分支作為source(通常選master)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;以我這次架設上我是多開一個 &lt;strong&gt;develop&lt;/strong&gt; 分支來放我的部落格原始碼。&lt;/p&gt;
+&lt;p&gt;如果建立的repo是 &lt;strong&gt;username.github.io&lt;/strong&gt; 這樣的命名規範，&lt;br&gt;
+就可以直接發佈了，&lt;br&gt;
+但如果不是使用 &lt;strong&gt;username.github.io&lt;/strong&gt; 這樣的命名規範，&lt;br&gt;
+則需要在多增加以下設定  &lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;package.json&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;json&quot;&gt;&lt;pre class=&quot;language-json&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;module.exports = &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  pathPrefix&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;/reponame&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;最後執行&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;npm run deploy&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;這樣我們就可以在 &lt;strong&gt;username.github.io&lt;/strong&gt; 看到部屬好的網站了。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2&gt;gh-page與 Gatsby專案 分離&lt;/h2&gt;
+&lt;p&gt;按照上述過程已經可以產生出一個靜態網站了，&lt;br&gt;
+但是develop與master是完全不同的內容真的很奇妙，&lt;br&gt;
+從上述過程我們已經知道其實佈屬是依靠以下指令&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;gatsby build &amp;amp;&amp;amp; gh-pages -d public -b master&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;其實稍微改一下佈屬指令就能做到gh-page以及實際Gatsby專案分離，  &lt;/p&gt;
+&lt;p&gt;首先增加一個 &lt;strong&gt;deploy-ghpage.js&lt;/strong&gt; 在根目錄&lt;/p&gt;
+&lt;p&gt;deploy-ghpage.js&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; ghpages &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;gh-pages&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+ghpages&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;publish&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+  &lt;span class=&quot;token string&quot;&gt;&apos;public&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    branch&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;master&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    repo&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; 你預計發佈的repo位置&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;Deploy Complete!&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;接下來跟剛剛一樣在 &lt;strong&gt;package.json&lt;/strong&gt;增加一個自訂指令&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;&amp;quot;deploy:ghpage&amp;quot;: &amp;quot;npm run build &amp;amp;&amp;amp; node ./deploy-ghpage&amp;quot;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;最後執行&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;npm run deploy:ghpage&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;就可以佈署到gh-page的repo了。&lt;/p&gt;
+&lt;h2&gt;CI/CD&lt;/h2&gt;
+&lt;p&gt;到目前為止我們只需要在 &lt;strong&gt;content/blog/&lt;/strong&gt; 新增 &lt;strong&gt;文章資料夾&lt;/strong&gt; 以及 編輯文章主體 &lt;strong&gt;index.md&lt;/strong&gt;，  &lt;/p&gt;
+&lt;p&gt;開發的時候執行&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;gatsby develop&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;發佈的時候執行&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;npm run deploy:ghpage&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;就可以完成絕大部分的發文章的動作。&lt;/p&gt;
+&lt;p&gt;但這樣每次發佈的時候都要再打一次指令且在寫文章的機器上執行一輪release，&lt;br&gt;
+如果可以在每次push完後自動做deploy發文體驗就會更好。&lt;/p&gt;
+&lt;p&gt;在花了一些時間尋找方案以後，&lt;br&gt;
+我決定用 Travis CI 來佈屬我的部落格。  &lt;/p&gt;
+&lt;h2&gt;前置設定&lt;/h2&gt;
+&lt;p&gt;首先先要先準備好 Travis CI 的帳號，&lt;br&gt;
+然後參考 &lt;a href=&quot;https://travis-ci.com/getting_started&quot;&gt;官方教學&lt;/a&gt; 連結 travis-ci 與 github repo，&lt;br&gt;
+也可以到Travis CI 的 setting頁選擇你的部落格repo。  &lt;/p&gt;
+&lt;p&gt;可參考以下流程&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;到 &lt;strong&gt;Setting&lt;/strong&gt; 頁&lt;/li&gt;
+&lt;li&gt;點 &lt;strong&gt;Manage repositories on GitHub&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;在 &lt;strong&gt;Repository access&lt;/strong&gt; 區域內的 &lt;strong&gt;Only select repositories&lt;/strong&gt; 選擇你的部落格repo  &lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;如果是public repo只需要 &lt;strong&gt;public_repo&lt;/strong&gt; 權限，&lt;br&gt;
+如果是private repo的話則需要整個repo權限。&lt;br&gt;
+這部分github官網文件有更詳細的&lt;a href=&quot;https://docs.github.com/en/developers/apps/scopes-for-oauth-apps&quot;&gt;說明&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;接下來要建立 &lt;strong&gt;.travis.yml&lt;/strong&gt; 在 專案根目錄才能讓  Travis CI 知道要執行什麼樣的任務&lt;/p&gt;
+&lt;p&gt;參考以下內容&lt;/p&gt;
+&lt;p&gt;.travis.yml&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;yml&quot;&gt;&lt;pre class=&quot;language-yml&quot;&gt;&lt;code class=&quot;language-yml&quot;&gt;&lt;span class=&quot;token key atrule&quot;&gt;language&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; node_js
+&lt;span class=&quot;token key atrule&quot;&gt;node_js&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;12&quot;&lt;/span&gt;
+&lt;span class=&quot;token key atrule&quot;&gt;install&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; npm install
+&lt;span class=&quot;token key atrule&quot;&gt;script&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; gatsby build&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;由於我在開發機上發佈時的nodejs環境是使用 12，&lt;br&gt;
+在yml檔中也是指定12。&lt;br&gt;
+完成後可以先push一個版本。&lt;/p&gt;
+&lt;p&gt;如果沒意外可以在
+&lt;strong&gt;&lt;a href=&quot;https://travis-ci.com/github/%7Busername%7D/%7Brepo&quot;&gt;https://travis-ci.com/github/{username}/{repo&lt;/a&gt; name}&lt;/strong&gt;
+看到 Travis CI 會檢查這一次的push有沒有問題。&lt;/p&gt;
+&lt;p&gt;接下來要到 Github/Settings/Developer settings內設定token，&lt;br&gt;
+要記得設定完後要記錄起來，&lt;br&gt;
+因為下次除了重新產生一組token以外沒有辦法看到token了。  &lt;/p&gt;
+&lt;p&gt;接下來到 &lt;a href=&quot;https://travis-ci.com/github/%7Busername%7D/reponame/settings&quot;&gt;https://travis-ci.com/github/{username}/reponame/settings&lt;/a&gt; 設定token，&lt;br&gt;
+要找到 Environment Variables 這個區塊並設定&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;Name         |Value           |
+GITHUB_TOKEN |剛剛拿到的token  |&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;我有多設定 BRANCH 指定master 才做整套CI/CD流程，&lt;br&gt;
+這部分就看使用習慣。  &lt;/p&gt;
+&lt;h2&gt;小插曲 為什麼不直接使用 deploy:ghpage 指令&lt;/h2&gt;
+&lt;p&gt;其實我一開始是直接寫 &lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;yml&quot;&gt;&lt;pre class=&quot;language-yml&quot;&gt;&lt;code class=&quot;language-yml&quot;&gt;&lt;span class=&quot;token key atrule&quot;&gt;script&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; npm run deploy&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;ghpage&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Travis CI也真的跑過了，&lt;br&gt;
+但是我的github page卻沒有成功被更新，&lt;br&gt;
+思考了一下才想到，&lt;br&gt;
+我根本沒有在build script裡面指定token，&lt;br&gt;
+這個deploy當然不會過，&lt;br&gt;
+加上build script沒有顯示錯誤訊息，&lt;br&gt;
+才會導致這個沒有正確上版的烏龍。&lt;/p&gt;
+&lt;h2&gt;再次修改.travis.yml&lt;/h2&gt;
+&lt;p&gt;設定完token也確定Travis CI可以完成build以後，&lt;br&gt;
+接下來要push完整的 &lt;strong&gt;.travis.yml&lt;/strong&gt;。&lt;br&gt;
+這裡使用的 travis 的 deploy指令。  &lt;/p&gt;
+&lt;p&gt;參考以下設定&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;yml&quot;&gt;&lt;pre class=&quot;language-yml&quot;&gt;&lt;code class=&quot;language-yml&quot;&gt;&lt;span class=&quot;token key atrule&quot;&gt;language&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; node_js
+
+&lt;span class=&quot;token key atrule&quot;&gt;sudo&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean important&quot;&gt;false&lt;/span&gt;
+
+&lt;span class=&quot;token key atrule&quot;&gt;branches&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;token key atrule&quot;&gt;only&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; master
+
+&lt;span class=&quot;token key atrule&quot;&gt;cache&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; npm &lt;span class=&quot;token comment&quot;&gt;#保存npm lib 避免每次 Travis CI build的時候會產生全新環境都要先下載一次所有lib&lt;/span&gt;
+
+&lt;span class=&quot;token key atrule&quot;&gt;node_js&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;12&quot;&lt;/span&gt;
+
+&lt;span class=&quot;token key atrule&quot;&gt;before_script&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; npm install
+
+&lt;span class=&quot;token key atrule&quot;&gt;script&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; gatsby build
+
+&lt;span class=&quot;token key atrule&quot;&gt;deploy&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;token key atrule&quot;&gt;provider&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; pages
+  &lt;span class=&quot;token key atrule&quot;&gt;skip-cleanup&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean important&quot;&gt;true&lt;/span&gt;
+  &lt;span class=&quot;token key atrule&quot;&gt;github-token&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; $GITHUB_TOKEN &lt;span class=&quot;token comment&quot;&gt;#剛剛設定的環境變數&lt;/span&gt;
+  &lt;span class=&quot;token key atrule&quot;&gt;repo&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;user/repo&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;name 不填寫就是當前分支&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token key atrule&quot;&gt;local-dir&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; public &lt;span class=&quot;token comment&quot;&gt;#gh-page輸出的是public 資料夾&lt;/span&gt;
+  &lt;span class=&quot;token key atrule&quot;&gt;keep-history&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean important&quot;&gt;false&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;# target_branch: gh-pages # 預設是gh-pages&lt;/span&gt;
+  &lt;span class=&quot;token key atrule&quot;&gt;on&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;token key atrule&quot;&gt;branch&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; master &lt;span class=&quot;token comment&quot;&gt;#source branch&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;然後push到master。&lt;/p&gt;
+&lt;p&gt;到這裡我們就完成Travis CI自動佈屬了。&lt;/p&gt;
+&lt;p&gt;做完一輪，&lt;br&gt;
+找了一下文件才發現 private repo build&lt;a href=&quot;https://docs.travis-ci.com/user/travis-ci-for-private/&quot;&gt;有一百次的限制&lt;/a&gt;。&lt;br&gt;
+在使用上要注意一下。&lt;/p&gt;
+&lt;p&gt;ref: &lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.gatsbyjs.com/docs/how-gatsby-works-with-github-pages/&quot;&gt;https://www.gatsbyjs.com/docs/how-gatsby-works-with-github-pages/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.travis-ci.com/user/languages/javascript-with-nodejs/&quot;&gt;https://docs.travis-ci.com/user/languages/javascript-with-nodejs/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.travis-ci.com/user/deployment/pages/&quot;&gt;https://docs.travis-ci.com/user/deployment/pages/&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</content:encoded></item><item><title><![CDATA[學習透過Gatsby.js架設部落格]]></title><description><![CDATA[本文會提到的東西 一些對使用個人部落格的想法 (個人廢話) 開發環境的前置準備實際執行一輪的筆記 稍微了解 Gatsby.js 如何產生出一頁、模組以及CSS套用等 套用現成blog 樣板 佈署到github-page…]]></description><link>https://kawwenwans.github.io/learn-gatsbyjs-to-start-blog-project/</link><guid isPermaLink="false">https://kawwenwans.github.io/learn-gatsbyjs-to-start-blog-project/</guid><pubDate>Mon, 17 Aug 2020 08:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;本文會提到的東西&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;一些對使用個人部落格的想法 &lt;del&gt;(個人廢話)&lt;/del&gt;&lt;/li&gt;
+&lt;li&gt;開發環境的前置準備實際執行一輪的筆記&lt;/li&gt;
+&lt;li&gt;稍微了解 Gatsby.js 如何產生出一頁、模組以及CSS套用等&lt;/li&gt;
+&lt;li&gt;套用現成blog 樣板&lt;/li&gt;
+&lt;li&gt;佈署到github-page&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;前言&lt;/h2&gt;
+&lt;p&gt;一直以來都有架設一個部落格的想法，&lt;br&gt;
+覺得日常的學習可以被記下來是一件很好的事情，&lt;br&gt;
+但心裡又會覺得似乎不用那麼麻煩 &lt;del&gt;(其實就是懶)&lt;/del&gt;，&lt;br&gt;
+上一季因為公司要求績效報告要交學習心得以後，&lt;br&gt;
+開始嘗試紀錄學習心得以後發現，&lt;br&gt;
+有寫下紀錄與只是讀過甚至是自己動手做一輪卻沒有記錄下來的差異是很大的，&lt;br&gt;
+因為在紀錄的過程中會從要講述給別人聽的角度去發現有些地方自己其實無法去解釋，&lt;br&gt;
+所以又會回過頭了解沒有弄懂的地方。&lt;br&gt;
+剛好在這一季的績效報告有要求學習心得一定要以部落格的形式，&lt;br&gt;
+(我是上一季學習筆記寫md放在gist上的懶人..XD)&lt;br&gt;
+也算是加速了我在這一季重新架設出一個部落格。&lt;/p&gt;
+&lt;h2&gt;為什麼我用Gatsby.js來架設部落格&lt;/h2&gt;
+&lt;p&gt;其實要達成自我學習筆記放在部落格這個條件，&lt;br&gt;
+有很多免費且簡單的方案可以選擇，&lt;br&gt;
+我曾經用blogger寫過文，&lt;br&gt;
+雖然很方便，&lt;br&gt;
+但是寫作體驗上我非常不喜歡，  &lt;/p&gt;
+&lt;p&gt;我心中理想的部落格有:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;要可以用MD格式&lt;br&gt;
+(目前沒看過網頁編輯器比直接寫MD好用的)  &lt;/li&gt;
+&lt;li&gt;設定到可以寫第一篇文的前置作業的成本不要太高&lt;br&gt;
+(成本包含時間與金錢等)&lt;/li&gt;
+&lt;li&gt;方便部落格搬家&lt;br&gt;
+(現成部落格服務搬家通常不容易)&lt;/li&gt;
+&lt;li&gt;程式碼高亮&lt;/li&gt;
+&lt;li&gt;[加分條件]SEO 支援&lt;/li&gt;
+&lt;li&gt;[加分條件]可以用git版控做文章管理&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;大部分除 WordPress.com 的部落格服務可以達成  &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;[] 要可以用MD格式&lt;br&gt;
+(這應該是不一定有支援)&lt;/li&gt;
+&lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; checked disabled&gt; 設定到可以寫第一篇文的前置作業的成本不要太高&lt;/li&gt;
+&lt;li&gt;[] 方便部落格搬家
+(部落格搬家是可以當一門生意的，搬部落格其實很麻煩)&lt;/li&gt;
+&lt;li&gt;[] 程式碼高亮&lt;br&gt;
+(這個算是不一定支援，大部分要透過js套件來完成)&lt;/li&gt;
+&lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; checked disabled&gt; [加分條件]SEO 支援&lt;br&gt;
+(基本上都會支援)&lt;/li&gt;
+&lt;li&gt;[] [加分條件]可以用git版控做文章管理&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;WordPress.com 的部落格服務可以達成:  &lt;/p&gt;
+&lt;ul&gt;
+&lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; checked disabled&gt; 要可以用MD格式&lt;/li&gt;
+&lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; checked disabled&gt; 設定到可以寫第一篇文的前置作業的成本不要太高&lt;/li&gt;
+&lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; checked disabled&gt; 方便部落格搬家&lt;br&gt;
+(官方直接支援搬到自架WordPress主機)&lt;/li&gt;
+&lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; checked disabled&gt; 程式碼高亮  &lt;/li&gt;
+&lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; checked disabled&gt; [加分條件]SEO 支援&lt;/li&gt;
+&lt;li&gt;[] [加分條件]可以用git版控做文章管理&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;但搬到WordPress自架主機則會變成:  &lt;/p&gt;
+&lt;ul&gt;
+&lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; checked disabled&gt; 要可以用MD格式  &lt;/li&gt;
+&lt;li&gt;[] 設定到可以寫第一篇文的前置作業的成本不要太高&lt;br&gt;
+(主機設定時間成本以及主機金錢成本等，WP主機維護相關知識對目前的我來說能在工作上沿用的程度不高)&lt;/li&gt;
+&lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; checked disabled&gt; 方便部落格搬家  &lt;/li&gt;
+&lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; checked disabled&gt; 程式碼高亮&lt;br&gt;
+(需安裝套件)  &lt;/li&gt;
+&lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; checked disabled&gt; [加分條件]SEO 支援  &lt;/li&gt;
+&lt;li&gt;[] [加分條件]可以用git版控做文章管理  &lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;而靜態網頁產生器(Static site generator)可以達成的有:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; checked disabled&gt; 要可以用MD格式  &lt;/li&gt;
+&lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; checked disabled&gt; 設定到可以寫第一篇文的前置作業的成本不要太高&lt;br&gt;
+(github以及md都是現成的，網頁前端技能學習可以直接在網頁開發領域沿用)&lt;/li&gt;
+&lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; checked disabled&gt; 方便部落格搬家&lt;br&gt;
+(都是靜態檔案可遷移性最高)&lt;/li&gt;
+&lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; checked disabled&gt; 程式碼高亮&lt;br&gt;
+(目前看過的都支援)  &lt;/li&gt;
+&lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; checked disabled&gt; [加分條件]SEO 支援&lt;br&gt;
+(可能需要自己再優化)  &lt;/li&gt;
+&lt;li class=&quot;task-list-item&quot;&gt;&lt;input type=&quot;checkbox&quot; checked disabled&gt; [加分條件]可以用git版控做文章管理&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;SSG看起來很美好，&lt;br&gt;
+但其實這樣會捨棄掉一些東西，
+比方像是:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;點擊計數器&lt;/li&gt;
+&lt;li&gt;留言功能&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;這部分只能依賴外部服務來達成，&lt;br&gt;
+但目前先不考慮。&lt;/p&gt;
+&lt;p&gt;在動手前看了Gatsby.js跟Next.js這兩套以React為基底的框架，&lt;br&gt;
+選擇Gatsby.js的原因還蠻單純的，&lt;br&gt;
+看起來Gatsby.js的plugin生態系比較充足，&lt;br&gt;
+且Next.js現成合適的Starter比較少，&lt;br&gt;
+最後聽見強者我同事說Next.js沒有server site render的話會有些問題，
+就確定以Gatsby.js起手了。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2&gt;前置環境&lt;/h2&gt;
+&lt;p&gt;使用 Gatsby 需要以下環境&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Node.js&lt;/li&gt;
+&lt;li&gt;Git&lt;/li&gt;
+&lt;li&gt;Gatsby cli&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;可參考 &lt;a href=&quot;https://www.gatsbyjs.org/tutorial/part-zero/&quot;&gt;Gatsby 官方網站教學&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;以下簡單帶過&lt;/p&gt;
+&lt;h3&gt;Node.js&lt;/h3&gt;
+&lt;p&gt;Gatsby 需要 Node.js環境，&lt;br&gt;
+可以到NodeJs官方網站有安裝的方法，&lt;br&gt;
+或是參考Gatsby 官方網站的教學，&lt;br&gt;
+這裡我使用choco在windows平台上做安裝NodeJs lts版&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;choco install nodejs-lts&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;安裝完後再terminal下檢查是否正確安裝&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;node -v&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;會顯示類似以下訊息&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;v12.18.3&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3&gt;Git&lt;/h3&gt;
+&lt;p&gt;如果沒有裝的話，
+Gatsby有提供&lt;a href=&quot;https://www.gatsbyjs.org/tutorial/part-zero/#install-git&quot;&gt;Git安裝教學&lt;/a&gt;，&lt;br&gt;
+或是可以參考網路上的其他教學做安裝&lt;/p&gt;
+&lt;h3&gt;安裝 gatsby-cli&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.gatsbyjs.org/tutorial/part-zero/#using-the-gatsby-cli&quot;&gt;官方安裝教學&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;以下是實際操作的簡略紀錄&lt;/p&gt;
+&lt;p&gt;執行以下指令&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;npm install -g gatsby-cli&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;個人不喜歡開啟匿名資料收集(telemetry)，&lt;br&gt;
+所以如果想要關閉的話可以下以下指令關閉&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;gatsby telemetry --disable&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;可以參考 Gatsby 官方網站的&lt;a href=&quot;https://www.gatsbyjs.org/docs/telemetry/&quot;&gt;說明&lt;/a&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2&gt;一個簡單的Hello World&lt;/h2&gt;
+&lt;p&gt;可參考官方網站的&lt;a href=&quot;https://www.gatsbyjs.org/tutorial/part-zero/#create-a-gatsby-site&quot;&gt;教學&lt;/a&gt;，&lt;br&gt;
+以下是實際操作的簡略紀錄&lt;/p&gt;
+&lt;p&gt;在 terminal 下以下指令新增專案&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;gatsby new hello-world https://github.com/gatsbyjs/gatsby-starter-hello-world&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;gatsby new&lt;/strong&gt; 指令的結構是&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;gatsby new &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;SITE_DIRECTORY_NAME&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;URL_OF_STARTER_GITHUB_REPO&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;在跳到工作目錄以後執行指令就可以將網站以開發模式跑起來，&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;cd&lt;/span&gt; hello-world&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;gatsby develop&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;小插曲&lt;/h3&gt;
+&lt;p&gt;在我學習期間，&lt;br&gt;
+線上的hello-world照著跑是無法開啟的，&lt;br&gt;
+會看到以下錯誤:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;Error: Cannot find module &amp;#39;gatsby-cli/lib/reporter&amp;#39;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;這部分只要&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;到package.json的Gatsby 從 &lt;strong&gt;2.24.41&lt;/strong&gt; &gt; &lt;strong&gt;2.24.42&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;刪除 package-lock.json&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;執行以下指令&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt; npm i gatsby-cli&lt;br&gt;
+npm install&lt;br&gt;
+gatsby develop  &lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;就可以了&lt;/p&gt;
+&lt;p&gt;如果照著操作到現在，&lt;br&gt;
+就可以透過 &lt;a href=&quot;http://localhost:8000/&quot;&gt;localhost:8000&lt;/a&gt; 來訪問範例Gatsby網站，&lt;br&gt;
+如果自己產生最小可用的Hello-world的話則需要以下檔案&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;.
+├── src
+├── gatsby-config.js
+└── package.json&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;並在工作目錄下執行 &lt;strong&gt;npm install&lt;/strong&gt; 後就可以執行 &lt;strong&gt;gatsby develop&lt;/strong&gt;並成功啟動Gatsby開發模式&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2&gt;Gatsby Page&lt;/h2&gt;
+&lt;p&gt;在前面一點的文章中我們按照 Gatsby官方教學跑了一個Hello-World，&lt;br&gt;
+當使用 &lt;strong&gt;gatsby develop&lt;/strong&gt; 指令啟動開發伺服器後，&lt;br&gt;
+會開啟Homepage，&lt;br&gt;
+這個檔案在 src/pages/index.js ，&lt;br&gt;
+在 Gatsby 中，&lt;br&gt;
+任何定義在 src/pages/*.js 的 React component會被當成是Gatsby Page，&lt;br&gt;
+舉例像是如果要新增一個about頁的話，就要新增 &lt;strong&gt;src/pages/about.js&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;import&lt;/span&gt; React &lt;span class=&quot;token keyword&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;react&quot;&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;default&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;About&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;div style&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; color&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token template-string&quot;&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;green&lt;/span&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;
+      &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;h1&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;About Kevin&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;h1&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;
+      &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;p&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;Some introduction&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;p&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;
+    &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;div&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;page components &amp;#x26; sub components&lt;/h2&gt;
+&lt;p&gt;現代網頁比較複雜，&lt;br&gt;
+通常網頁前端開發上也會做模組化，&lt;br&gt;
+如果要增加模組的話要新增 &lt;strong&gt;src/components/*.js&lt;/strong&gt;&lt;br&gt;
+如果我們新增一個 &lt;strong&gt;src/components/header.js&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;import&lt;/span&gt; React &lt;span class=&quot;token keyword&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;react&quot;&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;default&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;Header&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;props&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;h1&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;props&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;headerText&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;h1&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;並將首頁改成&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;import&lt;/span&gt; React &lt;span class=&quot;token keyword&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;react&quot;&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;import&lt;/span&gt; Header &lt;span class=&quot;token keyword&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;../components/header&quot;&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;default&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;Home&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;div&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;
+      &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;Header headerText&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;Header from index&quot;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;
+      &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;div&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;Hello world&lt;span class=&quot;token operator&quot;&gt;!&lt;/span&gt; aaa&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;div&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;
+    &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;div&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;  
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;此時畫面就會顯示&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;Header from index
+Hello world! aaa&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;如果要從Home頁跳到About頁的話可以使用&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;html&quot;&gt;&lt;pre class=&quot;language-html&quot;&gt;&lt;code class=&quot;language-html&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;Link&lt;/span&gt; &lt;span class=&quot;token attr-name&quot;&gt;to&lt;/span&gt;&lt;span class=&quot;token attr-value&quot;&gt;&lt;span class=&quot;token punctuation attr-equals&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;/about/&lt;span class=&quot;token punctuation&quot;&gt;&quot;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;About&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;/&lt;/span&gt;Link&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;在使用時要額外import套件&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; Link &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;gatsby&quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;增加網站的Style&lt;/h2&gt;
+&lt;p&gt;通常來說一個網站都會有一些全站共用樣式，&lt;br&gt;
+在Gatsby中，
+我們需要先建立 &lt;strong&gt;gatsby-browser.js&lt;/strong&gt;，&lt;br&gt;
+然後再將 &lt;strong&gt;.css&lt;/strong&gt;檔案加在 &lt;strong&gt;gatsby-browser.js&lt;/strong&gt;，&lt;br&gt;
+如果要加入全站用的樣式的話，&lt;br&gt;
+可以加入&lt;br&gt;
+&lt;strong&gt;src/styles/global.css&lt;/strong&gt;  &lt;/p&gt;
+&lt;p&gt;並在 &lt;strong&gt;gatsby-browser.js&lt;/strong&gt; 加入&lt;/p&gt;
+&lt;p&gt;ES Module syntax &lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;./src/styles/global.css&quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;或是  &lt;/p&gt;
+&lt;p&gt;CommonJS syntax &lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token function&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;./src/styles/global.css&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;*以上的差別是CommonJS可以在node.js環境中執行，ES Module不可以&lt;/p&gt;
+&lt;h2&gt;sub components CSS&lt;/h2&gt;
+&lt;p&gt;在 &lt;strong&gt;src/components&lt;/strong&gt; 加入 以下檔案&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;articles-part.js&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;import&lt;/span&gt; React &lt;span class=&quot;token keyword&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;react&quot;&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;import&lt;/span&gt; ArticlesCSS &lt;span class=&quot;token keyword&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;./articles.module.css&quot;&lt;/span&gt;
+
+console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;ArticlesCSS&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;default&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;ArticlesPart&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;div &lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;articles-part&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;some article&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;div&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;articles.module&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;css&quot;&gt;&lt;pre class=&quot;language-css&quot;&gt;&lt;code class=&quot;language-css&quot;&gt;&lt;span class=&quot;token selector&quot;&gt;.articles-part&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;margin&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; 5%&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;background-color&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; aqua&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;這時候會發現CSS沒有正確在套用在畫面上，&lt;br&gt;
+原因是在build的時候css會被打包成特定檔案格式，&lt;br&gt;
+實際產生的CSS檔與build出來的CSS檔內容不同，&lt;br&gt;
+從debug console可以發現加載的CSS檔內的CSS樣式是有加上隨機字串的，&lt;br&gt;
+這時候只要參考 &lt;strong&gt;console.log(ArticlesCSS)&lt;/strong&gt; 內的物件，
+改成&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;import&lt;/span&gt; React &lt;span class=&quot;token keyword&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;react&quot;&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;import&lt;/span&gt; ArticlesCSS &lt;span class=&quot;token keyword&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;./articles.module.css&quot;&lt;/span&gt;
+
+console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;ArticlesCSS&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;default&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;ArticlesPart&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;div &lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;ArticlesCSS&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;articlesPart&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;some article&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;div&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;就能正確套用CSS樣式。&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;ref:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.gatsbyjs.org/tutorial/&quot;&gt;https://www.gatsbyjs.org/tutorial/&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</content:encoded></item><item><title><![CDATA[.Net Span<T> API and Memory<T> API Study]]></title><description><![CDATA[Microsoft在2018年一月的MSDN Magazine初步釋出了Span API的相關資訊，
+這組API目前在 System.Memory的MemoryExtensions下 主要可以產生以下四種類別 Span<T> Memory<T> ReadOnlySpan<T…]]></description><link>https://kawwenwans.github.io/study-dotnet-span-api/</link><guid isPermaLink="false">https://kawwenwans.github.io/study-dotnet-span-api/</guid><pubDate>Sat, 27 Jun 2020 08:00:00 GMT</pubDate><content:encoded>&lt;p&gt;Microsoft在2018年一月的MSDN Magazine初步釋出了Span API的相關資訊，
+這組API目前在 System.Memory的MemoryExtensions下&lt;/p&gt;
+&lt;p&gt;主要可以產生以下四種類別&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Span&amp;#x3C;T&gt;&lt;/li&gt;
+&lt;li&gt;Memory&amp;#x3C;T&gt;&lt;/li&gt;
+&lt;li&gt;ReadOnlySpan&amp;#x3C;T&gt;&lt;/li&gt;
+&lt;li&gt;ReadOnlyMomory&amp;#x3C;T&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Span&amp;#x3C;T&gt;與 Memory&amp;#x3C;T&gt;是一種對記憶體操作的API，表示一段連續的記憶體。讓開發者可以更安全的操作記憶體。&lt;/p&gt;
+&lt;p&gt;Span&amp;#x3C;T&gt;與 Memory&amp;#x3C;T&gt;主要是透過以下API來存取記憶體的一個區段&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;public Span&amp;lt;T&amp;gt; Slice(int start);
+public ReadOnlySpan&amp;lt;T&amp;gt; Slice(int start);
+public Span&amp;lt;T&amp;gt; Slice(int start, int length);
+public ReadOnlySpan&amp;lt;T&amp;gt; Slice(int start, int length);
+
+public Memory&amp;lt;T&amp;gt; Slice(int start);
+public ReadOnlyMemory&amp;lt;T&amp;gt; Slice(int start);
+public Memory&amp;lt;T&amp;gt; Slice(int start, int length);
+public ReadOnlyMemory&amp;lt;T&amp;gt; Slice(int start, int length);&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;假如是一串字串的話，
+用Span&amp;#x3C;T&gt;與 Memory&amp;#x3C;T&gt;可以直接指定某段記憶體位置而不用直接多放一段字串到字串池&lt;/p&gt;
+&lt;p&gt;假如要從Hello World切出or這個字串的時候&lt;/p&gt;
+&lt;p&gt;使用String.SubString會變成&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;字串池
+---------------------------
+|H|e|l|l|o| |W|o|r|l|d|o|r|
+---------------------------&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;而使用Span會變成&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;字串池
+-----------------------
+|H|e|l|l|o| |W|o|r|l|d|
+-----------------------
+              |   |
+              span1&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;以下是對Span API做的一些對比測試&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;常見的字串分割操作&lt;/p&gt;
+&lt;h2&gt;String.SubString&lt;/h2&gt;
+&lt;h3&gt;使用 String SubString 做一百萬次SubString&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/blob/master/1.NativeSubString/Program.cs&quot;&gt;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/blob/master/1.NativeSubString/Program.cs&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;使用時間:21ms&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;[System.Runtime]
+    % Time in GC since last GC (%)                         4
+    Allocation Rate / 1 sec (B)                            0
+    CPU Usage (%)                                          0
+    Exception Count / 1 sec                                0
+    GC Heap Size (MB)                                      1
+    Gen 0 GC Count / 60 sec                                0
+    Gen 0 Size (B)                                        24
+    Gen 1 GC Count / 60 sec                                0
+    Gen 1 Size (B)                                       288
+    Gen 2 GC Count / 60 sec                                0
+    Gen 2 Size (B)                                   115,216
+    LOH Size (B)                                      19,640
+    Monitor Lock Contention Count / 1 sec                  0
+    Number of Active Timers                                0
+    Number of Assemblies Loaded                            7
+    ThreadPool Completed Work Item Count / 1 sec           1
+    ThreadPool Queue Length                                0
+    ThreadPool Thread Count                                2
+    Working Set (MB)                                      23&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;使用ReadOnlySpan&amp;#x3C;char&gt; 做一百萬次Slice&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/blob/master/2.ReadOnlySpanSubString/Program.cs&quot;&gt;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/blob/master/2.ReadOnlySpanSubString/Program.cs&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;使用時間:22ms&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;[System.Runtime]
+    % Time in GC since last GC (%)                         0
+    Allocation Rate / 1 sec (B)                            0
+    CPU Usage (%)                                          0
+    Exception Count / 1 sec                                0
+    GC Heap Size (MB)                                      0
+    Gen 0 GC Count / 60 sec                                0
+    Gen 0 Size (B)                                         0
+    Gen 1 GC Count / 60 sec                                0
+    Gen 1 Size (B)                                         0
+    Gen 2 GC Count / 60 sec                                0
+    Gen 2 Size (B)                                         0
+    LOH Size (B)                                           0
+    Monitor Lock Contention Count / 1 sec                  0
+    Number of Active Timers                                0
+    Number of Assemblies Loaded                            8
+    ThreadPool Completed Work Item Count / 1 sec           0
+    ThreadPool Queue Length                                0
+    ThreadPool Thread Count                                2
+    Working Set (MB)                                      20&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;使用ReadOnlyMemory&amp;#x3C;char&gt; 做一百萬次Slice&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/blob/master/3.ReadOnlyMemorySubString/Program.cs&quot;&gt;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/blob/master/3.ReadOnlyMemorySubString/Program.cs&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;使用時間:33ms&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;[System.Runtime]
+    % Time in GC since last GC (%)                         0
+    Allocation Rate / 1 sec (B)                            0
+    CPU Usage (%)                                          0
+    Exception Count / 1 sec                                0
+    GC Heap Size (MB)                                      0
+    Gen 0 GC Count / 60 sec                                0
+    Gen 0 Size (B)                                         0
+    Gen 1 GC Count / 60 sec                                0
+    Gen 1 Size (B)                                         0
+    Gen 2 GC Count / 60 sec                                0
+    Gen 2 Size (B)                                         0
+    LOH Size (B)                                           0
+    Monitor Lock Contention Count / 1 sec                  0
+    Number of Active Timers                                0
+    Number of Assemblies Loaded                            8
+    ThreadPool Completed Work Item Count / 1 sec           0
+    ThreadPool Queue Length                                0
+    ThreadPool Thread Count                                2
+    Working Set (MB)                                      20&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;String.Split&lt;/h2&gt;
+&lt;h3&gt;使用String 做一百萬次Split&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/tree/master/4.NativeSplit&quot;&gt;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/tree/master/4.NativeSplit&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;使用時間:177ms&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;[System.Runtime]
+    % Time in GC since last GC (%)                         1
+    Allocation Rate / 1 sec (B)                            0
+    CPU Usage (%)                                          0
+    Exception Count / 1 sec                                0
+    GC Heap Size (MB)                                      2
+    Gen 0 GC Count / 60 sec                                0
+    Gen 0 Size (B)                                        24
+    Gen 1 GC Count / 60 sec                                0
+    Gen 1 Size (B)                                    11,400
+    Gen 2 GC Count / 60 sec                                0
+    Gen 2 Size (B)                                   115,200
+    LOH Size (B)                                      19,640
+    Monitor Lock Contention Count / 1 sec                  0
+    Number of Active Timers                                0
+    Number of Assemblies Loaded                            7
+    ThreadPool Completed Work Item Count / 1 sec           1
+    ThreadPool Queue Length                                0
+    ThreadPool Thread Count                                2
+    Working Set (MB)                                      23&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;使用ReadOnlySpan&amp;#x3C;char&gt; 做一百萬次 Split實作&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/blob/master/5.ReadOnlySpanSplit/Program.cs&quot;&gt;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/blob/master/5.ReadOnlySpanSplit/Program.cs&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;使用時間:222ms&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;[System.Runtime]
+    % Time in GC since last GC (%)                         0
+    Allocation Rate / 1 sec (B)                            0
+    CPU Usage (%)                                          0
+    Exception Count / 1 sec                                0
+    GC Heap Size (MB)                                      0
+    Gen 0 GC Count / 60 sec                                0
+    Gen 0 Size (B)                                         0
+    Gen 1 GC Count / 60 sec                                0
+    Gen 1 Size (B)                                         0
+    Gen 2 GC Count / 60 sec                                0
+    Gen 2 Size (B)                                         0
+    LOH Size (B)                                           0
+    Monitor Lock Contention Count / 1 sec                  0
+    Number of Active Timers                                0
+    Number of Assemblies Loaded                            8
+    ThreadPool Completed Work Item Count / 1 sec           0
+    ThreadPool Queue Length                                0
+    ThreadPool Thread Count                                2
+    Working Set (MB)                                      19&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;使用ReadOnlyMemory&amp;#x3C;char&gt; 做一百萬次 Split實作&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/blob/master/6.ReadOnlyMemorySplit/Program.cs&quot;&gt;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/blob/master/6.ReadOnlyMemorySplit/Program.cs&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;使用時間:224ms&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;[System.Runtime]
+    % Time in GC since last GC (%)                         0
+    Allocation Rate / 1 sec (B)                            0
+    CPU Usage (%)                                          0
+    Exception Count / 1 sec                                0
+    GC Heap Size (MB)                                      0
+    Gen 0 GC Count / 60 sec                                0
+    Gen 0 Size (B)                                         0
+    Gen 1 GC Count / 60 sec                                0
+    Gen 1 Size (B)                                         0
+    Gen 2 GC Count / 60 sec                                0
+    Gen 2 Size (B)                                         0
+    LOH Size (B)                                           0
+    Monitor Lock Contention Count / 1 sec                  0
+    Number of Active Timers                                0
+    Number of Assemblies Loaded                            8
+    ThreadPool Completed Work Item Count / 1 sec           0
+    ThreadPool Queue Length                                0
+    ThreadPool Thread Count                                2
+    Working Set (MB)                                      20&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;Span&amp;#x3C;T&gt; 與 Memory&amp;#x3C;T&gt;的一些差異&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;Span&amp;#x3C;T&gt;只能用在同步方法，Memory&amp;#x3C;T&gt;可以用在非同步方法。&lt;/li&gt;
+&lt;li&gt;Memory&amp;#x3C;T&gt;可以轉成Span&amp;#x3C;T&gt;，Span&amp;#x3C;T&gt;不能轉成Memory&amp;#x3C;T&gt;。&lt;/li&gt;
+&lt;li&gt;Span&amp;#x3C;T&gt;在Stack上，Memory&amp;#x3C;T&gt;在Heap上。&lt;/li&gt;
+&lt;li&gt;Span&amp;#x3C;T&gt;不能通過ValueTuple方式回傳，Memory&amp;#x3C;T&gt;可以。&lt;/li&gt;
+&lt;li&gt;Span&amp;#x3C;T&gt;不能成為類別的成員，Memory&amp;#x3C;T&gt;可以。&lt;/li&gt;
+&lt;li&gt;Span&amp;#x3C;T&gt;不能手動釋放，Memory&amp;#x3C;T&gt;可以透過Pin()方法通知runtime由開發者手動回收。&lt;/li&gt;
+&lt;li&gt;Span&amp;#x3C;T&gt;不能作為泛型類型參數，Memory&amp;#x3C;T&gt;可以。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;*造成Span&amp;#x3C;T&gt; 與 Memory&amp;#x3C;T&gt;的一些差異主要都在於Span&amp;#x3C;T&gt;是放在Stack上所產生出的限制，&lt;/p&gt;
+&lt;h2&gt;一些可用的原生API&lt;/h2&gt;
+&lt;p&gt;目前一些原生API已經支援以Span&amp;#x3C;T&gt; 與 Memory&amp;#x3C;T&gt;當成參數，比方說&lt;/p&gt;
+&lt;p&gt;String&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;public static string Concat (ReadOnlySpan&amp;lt;char&amp;gt; str0, ReadOnlySpan&amp;lt;char&amp;gt; str1);&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Utf8Formatter&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;public static bool TryFormat (int value, Span&amp;lt;byte&amp;gt; destination, out int bytesWritten, System.Buffers.StandardFormat format = default);&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Utf8Parser &lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;public static bool TryParse (ReadOnlySpan&amp;lt;byte&amp;gt; source, out int value, out int bytesConsumed, char standardFormat = &amp;#39;\0&amp;#39;);&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;ref:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/archive/msdn-magazine/2018/january/csharp-all-about-span-exploring-a-new-net-mainstay&quot;&gt;https://docs.microsoft.com/zh-tw/archive/msdn-magazine/2018/january/csharp-all-about-span-exploring-a-new-net-mainstay&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/dotnet/standard/memory-and-spans/memory-t-usage-guidelines&quot;&gt;https://docs.microsoft.com/zh-tw/dotnet/standard/memory-and-spans/memory-t-usage-guidelines&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</content:encoded></item><item><title><![CDATA[.Net 記憶體管理的一些study]]></title><description><![CDATA[這一季聽了許多同事在記憶體管理的一些討論， 決定花一些時間來讀官方文件以及動手實作看看。 在研究記憶體管理之前要先有相關監測工具， 我使用dot net 內建的工具來做監測。 先執行一個簡單的Hello world 並透過以下指令取得process id: 然後找到要監測的pid…]]></description><link>https://kawwenwans.github.io/study-dotnet-memory-management/</link><guid isPermaLink="false">https://kawwenwans.github.io/study-dotnet-memory-management/</guid><pubDate>Fri, 26 Jun 2020 08:00:00 GMT</pubDate><content:encoded>&lt;p&gt;這一季聽了許多同事在記憶體管理的一些討論，&lt;br&gt;
+決定花一些時間來讀官方文件以及動手實作看看。&lt;/p&gt;
+&lt;p&gt;在研究記憶體管理之前要先有相關監測工具，&lt;br&gt;
+我使用dot net 內建的工具來做監測。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;dotnet tool install --global dotnet-trace
+dotnet tool install --global dotnet-counters&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;先執行一個簡單的Hello world&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine(&amp;quot;Hello World!&amp;quot;);
+            Console.ReadKey();
+        }
+    }&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;並透過以下指令取得process id:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;dotnet-trace ps&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;然後找到要監測的pid&lt;/p&gt;
+&lt;p&gt;接下來執行&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;dotnet-counters monitor --refresh-interval 1 -p {pid}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;[System.Runtime]
+    % Time in GC since last GC (%)                         0
+    Allocation Rate / 1 sec (B)                        8,168
+    CPU Usage (%)                                          0
+    Exception Count / 1 sec                                0
+    GC Heap Size (MB)                                      0
+    Gen 0 GC Count / 60 sec                                0
+    Gen 0 Size (B)                                         0
+    Gen 1 GC Count / 60 sec                                0
+    Gen 1 Size (B)                                         0
+    Gen 2 GC Count / 60 sec                                0
+    Gen 2 Size (B)                                         0
+    LOH Size (B)                                           0
+    Monitor Lock Contention Count / 1 sec                  0
+    Number of Active Timers                                0
+    Number of Assemblies Loaded                            7
+    ThreadPool Completed Work Item Count / 1 sec           0
+    ThreadPool Queue Length                                0
+    ThreadPool Thread Count                                2
+    Working Set (MB)                                      20&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;接下來要多產生一些物件&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;	class Program
+	{
+		static void Main(string[] args)
+		{
+			Console.WriteLine(&amp;quot;press any key to start&amp;quot;);
+			Console.ReadKey();
+			for (var i = 1; i &amp;lt; 10 * 60; i++)
+			{
+				var array = new byte[500000];
+				var random = new Random();
+				random.NextBytes(array);
+				Thread.Sleep(100);
+			}
+			Console.WriteLine(&amp;quot;press any key exit...&amp;quot;);
+			Console.ReadKey();
+		}
+	}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;執行中&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;[System.Runtime]
+    % Time in GC since last GC (%)                         0
+    Allocation Rate / 1 sec (B)                    5,008,128
+    CPU Usage (%)                                          0
+    Exception Count / 1 sec                                0
+    GC Heap Size (MB)                                      2
+    Gen 0 GC Count / 60 sec                              120
+    Gen 0 Size (B)                                        24
+    Gen 1 GC Count / 60 sec                              120
+    Gen 1 Size (B)                                     5,952
+    Gen 2 GC Count / 60 sec                              120
+    Gen 2 Size (B)                                   239,456
+    LOH Size (B)                                   4,020,088
+    Monitor Lock Contention Count / 1 sec                  0
+    Number of Active Timers                                0
+    Number of Assemblies Loaded                            8
+    ThreadPool Completed Work Item Count / 1 sec           0
+    ThreadPool Queue Length                                0
+    ThreadPool Thread Count                                2
+    Working Set (MB)                                      24&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;執行結束&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;[System.Runtime]
+    % Time in GC since last GC (%)                         0
+    Allocation Rate / 1 sec (B)                        8,168
+    CPU Usage (%)                                          0
+    Exception Count / 1 sec                                0
+    GC Heap Size (MB)                                      2
+    Gen 0 GC Count / 60 sec                                0
+    Gen 0 Size (B)                                        24
+    Gen 1 GC Count / 60 sec                                0
+    Gen 1 Size (B)                                   117,360
+    Gen 2 GC Count / 60 sec                                0
+    Gen 2 Size (B)                                   117,704
+    LOH Size (B)                                   3,520,032
+    Monitor Lock Contention Count / 1 sec                  0
+    Number of Active Timers                                0
+    Number of Assemblies Loaded                            8
+    ThreadPool Completed Work Item Count / 1 sec           0
+    ThreadPool Queue Length                                0
+    ThreadPool Thread Count                                0
+    Working Set (MB)                                      24&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;以上資訊有幾個名詞&lt;/p&gt;
+&lt;p&gt;其中&lt;/p&gt;
+&lt;p&gt;Allocation Rate / 1 sec (B) 約為 5,000,000
+(程式碼是每100毫秒 new byte[500000]&lt;/p&gt;
+&lt;p&gt;大型物件堆積(LOH)占用非常多的原因是因為當物件要求超過85,000 B的時候，&lt;br&gt;
+runtime會一律將物件放在LOH上，&lt;br&gt;
+而小於85,000 B的物件會放在(小型物件堆積)SOH上。&lt;/p&gt;
+&lt;h2&gt;物件在記憶體中會放在以下幾個層代&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;層代 0(Gen 0)&lt;/li&gt;
+&lt;li&gt;層代 1(Gen 1)&lt;/li&gt;
+&lt;li&gt;層代 2(Gen 2)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;占用記憶體小的物件會在Gen 0結束，
+留存比較久的物件會提升到Gen 1或Gen 2，
+提升的條件為GC發生後沒被回收的物件就會被提升，
+而大型物件會一律在Gen 2中。&lt;/p&gt;
+&lt;h2&gt;GC通常發生在&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;Gen 0 達到回收閥值&lt;/li&gt;
+&lt;li&gt;LOH 達到回收閥值&lt;/li&gt;
+&lt;li&gt;系統記憶體不足(由作業系統通知)&lt;/li&gt;
+&lt;li&gt;呼叫GC.Collect()後強制執行&lt;br&gt;
+(不是每種runtime都是這樣實作的，如Java的實作是只通知GC，系統不一定會馬上執行，也可能忽略GC請求)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;GC有兩種方式&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;工作站垃圾收集(Workstation garbage collection)
+在只有一個處理器的的機器上會強制使用這種方式，
+GC執行緒會與其他執行緒搶CPU時間&lt;/li&gt;
+&lt;li&gt;伺服器垃圾收集(Server garbage collection)
+每個處理器上都會有一條專門GC執行緒，&lt;br&gt;
+由於有多個GC執行緒，&lt;br&gt;
+所以GC速度會比工作站垃圾收集快，
+但是如果有多個程式在同一台機器上使用伺服器垃圾收集時會互搶CPU時間，&lt;br&gt;
+所以會建議不要同時開伺服器垃圾回收，&lt;br&gt;
+甚至在上百個程式在同一台機器上運行時，&lt;br&gt;
+建議切換為工作站垃圾收集避免大量的context switch。  &lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;前景GC與背景GC&lt;/h2&gt;
+&lt;p&gt;GC也分為&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;背景垃圾收集(background GC)&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;在背景垃圾收集發生時所有託管的執行緒會盡可能的繼續執行&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;前景垃圾收集(foreground GC)&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;在前景垃圾收集發生時所有託管的執行緒都必須暫停執行&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;不同Gen有不同的回收期間&lt;/h2&gt;
+&lt;p&gt;Gen 1 GC發生時，會同時對Gen 0與Gen 1做記憶體回收，&lt;br&gt;
+Gen 2 GC發生時，則會同時對Gen 0、Gen 1與Gen 2做記憶體回收，
+所以Gen 2 GC又稱為完整GC。  &lt;/p&gt;
+&lt;h2&gt;以下是一塊記憶體配置的示例&lt;/h2&gt;
+&lt;h3&gt;SOH Allocations and GC&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;GC前&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;----------------------------------------------------
+|Obj1(使用中) |Obj2(未使用)|Obj3(使用中)|Obj4(未使用)|
+----------------------------------------------------
+|            |            |           |
+Gen 0        Gen 0        Gen 0       Gen 0&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;開始GC&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;----------------------------------------------------
+|Obj1(使用中) |            |Obj3(使用中)|           |
+----------------------------------------------------&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;壓縮&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;----------------------------------------------------
+|Obj1(使用中) |Obj3(使用中)|                        |
+----------------------------------------------------
+|
+Gen 1&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;此時Obj1 Obj3提升到Gen 1&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;LOH Allocations and GC&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;GC前&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;----------------------------------------------------
+|Obj1(使用中) |Obj2(未使用)|Obj3(使用中)|Obj4(未使用)|
+----------------------------------------------------
+|            |            |           |
+Gen 2        Gen 2        Gen 2       Gen 2&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;GC&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;----------------------------------------------------
+|Obj1(使用中) |            |Obj3(使用中)|           |
+----------------------------------------------------
+|                         |
+Gen 2                     Gen 2&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;LOH的記憶體區塊通常不會壓縮，&lt;br&gt;
+因為大型物件的搬移成本較高，&lt;br&gt;
+在較新的runtime可以透過設定，&lt;br&gt;
+GCSettings.LargeObjectHeapCompactionMode&lt;br&gt;
+決定是否要做LOH 壓縮(*7)&lt;br&gt;
+(文件有提到目前不會自動壓縮LOH但未來.Net不排除會自動壓縮LOH)  &lt;/p&gt;
+&lt;h3&gt;記憶體使用不當對效能的影響&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;頻繁GC導致執行緒被暫停吞吐量降低  &lt;/li&gt;
+&lt;li&gt;記憶體碎片過多導致頻繁壓縮甚至因無法配置記憶體導致記憶體不足  &lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;記憶體使用上的一些優化技巧&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;在預先知道集合大小時直接配置剛好的大小避免自動配置導致配置多餘的記憶體。  &lt;/li&gt;
+&lt;li&gt;在集合(如列表)可重用的情形下直接透過static宣告直接重用。&lt;br&gt;
+(通常在Job等只有一條執行緒存取的情境較常見)  &lt;/li&gt;
+&lt;li&gt;若是資料物件傳遞的情境可以考慮定出介面並實作，&lt;br&gt;
+使物件傳遞時不須因為要轉換成小物件而需再建立一個小物件並重新賦值。  &lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;如&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;		public interface IAccountInfo
+		{
+			string AccountId { get; set; }
+			string Password { get; set; }
+			string Name { get; set; }
+			int Gender { get; set; }
+			string FirstName { get; set; }
+			string LastName { get; set; }
+		}
+
+		public class AccountInfo : IAccountInfo, ISmallAccountInfo
+		{
+			public string AccountId { get; set; }
+			public string Password { get; set; }
+			public string Name { get; set; }
+			public int Gender { get; set; }
+			public string FirstName { get; set; }
+			public string LastName { get; set; }
+			public string FullName { get =&amp;gt; FirstName + LastName; }
+		}
+
+		public interface ISmallAccountInfo
+		{
+			string AccountId { get; }
+			string Password { get; }
+			string FullName { get; }
+		}
+
+		public class SmallAccountInfo : ISmallAccountInfo
+		{
+			public string AccountId { get; }
+			public string Password { get; }
+			public string FullName { get; }
+		}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;在取得AccountInfo物件後，&lt;br&gt;
+若需要呼叫一個方法而此方法需要 SmallAccountInfo 資料物件，&lt;br&gt;
+就可以考慮透過這樣的技巧省去新配置物件以及賦值。&lt;/p&gt;
+&lt;ol start=&quot;4&quot;&gt;
+&lt;li&gt;部分無狀態物件可考慮用Singleton，&lt;br&gt;
+但建議透過DI容器來使用Singleton。  &lt;/li&gt;
+&lt;li&gt;實作Object Pool將部分常常重複建立的物件都透過Pool來取得避免不斷重配置記憶體後再被回收。(手機應用開發上很常見)  &lt;/li&gt;
+&lt;li&gt;使用 .Net 提供的 Span&amp;#x3C;T&gt; 和 Memory&amp;#x3C;T&gt; API操作記憶體&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;ref:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/dotnet/core/diagnostics/dotnet-trace&quot;&gt;https://docs.microsoft.com/zh-tw/dotnet/core/diagnostics/dotnet-trace&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/dotnet/core/diagnostics/dotnet-counters&quot;&gt;https://docs.microsoft.com/zh-tw/dotnet/core/diagnostics/dotnet-counters&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/aspnet/core/performance/memory?view=aspnetcore-3.1&quot;&gt;https://docs.microsoft.com/zh-tw/aspnet/core/performance/memory?view=aspnetcore-3.1&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/dotnet/core/diagnostics/debug-memory-leak&quot;&gt;https://docs.microsoft.com/zh-tw/dotnet/core/diagnostics/debug-memory-leak&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/dotnet/standard/garbage-collection/background-gc&quot;&gt;https://docs.microsoft.com/zh-tw/dotnet/standard/garbage-collection/background-gc&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/dotnet/api/system.gc.collect?view=netcore-3.1&quot;&gt;https://docs.microsoft.com/zh-tw/dotnet/api/system.gc.collect?view=netcore-3.1&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/dotnet/api/system.runtime.gcsettings.largeobjectheapcompactionmode?view=netcore-3.1&quot;&gt;https://docs.microsoft.com/zh-tw/dotnet/api/system.runtime.gcsettings.largeobjectheapcompactionmode?view=netcore-3.1&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/dotnet/standard/garbage-collection/workstation-server-gc&quot;&gt;https://docs.microsoft.com/zh-tw/dotnet/standard/garbage-collection/workstation-server-gc&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</content:encoded></item></channel></rss>
