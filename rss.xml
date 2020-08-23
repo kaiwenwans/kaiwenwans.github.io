@@ -1,44 +1,44 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[kevin wang's blog]]></title><description><![CDATA[這是凱文的部落格.]]></description><link>https://kawwenwans.github.io</link><generator>GatsbyJS</generator><lastBuildDate>Sun, 23 Aug 2020 08:08:52 GMT</lastBuildDate><item><title><![CDATA[透過 Github Action 將 Gatsby 佈數到 GitHub Page]]></title><description><![CDATA[本文會提到 設定 Github Action   透過 Github Action 發佈 Gatsby Project到 GitHub Page   前言 在 Github Action 推出前， Github最常搭配的CI服務很常是Travis CI， 相信大家有在Github…]]></description><link>https://kawwenwans.github.io/deploy-gatsby-by-github-action/</link><guid isPermaLink="false">https://kawwenwans.github.io/deploy-gatsby-by-github-action/</guid><pubDate>Sun, 23 Aug 2020 08:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;本文會提到&lt;/h2&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[kevin wang's blog]]></title><description><![CDATA[這是凱文的部落格.]]></description><link>https://kawwenwans.github.io</link><generator>GatsbyJS</generator><lastBuildDate>Sun, 23 Aug 2020 10:07:11 GMT</lastBuildDate><item><title><![CDATA[透過 GitHub Action 將 Gatsby 部署到 GitHub Page]]></title><description><![CDATA[本文會提到 設定 GitHub Action   透過 GitHub Action 發佈 Gatsby Project到 GitHub Page   GitHub Action 的計費方式 前言 在 GitHub Action 推出前， GitHub 最常搭配的CI…]]></description><link>https://kawwenwans.github.io/deploy-gatsby-by-github-action/</link><guid isPermaLink="false">https://kawwenwans.github.io/deploy-gatsby-by-github-action/</guid><pubDate>Sun, 23 Aug 2020 08:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;本文會提到&lt;/h2&gt;
 &lt;ol&gt;
-&lt;li&gt;設定 Github Action  &lt;/li&gt;
-&lt;li&gt;透過 Github Action 發佈 Gatsby Project到 GitHub Page  &lt;/li&gt;
+&lt;li&gt;設定 GitHub Action  &lt;/li&gt;
+&lt;li&gt;透過 GitHub Action 發佈 Gatsby Project到 GitHub Page  &lt;/li&gt;
+&lt;li&gt;GitHub Action 的計費方式&lt;/li&gt;
 &lt;/ol&gt;
 &lt;h2&gt;前言&lt;/h2&gt;
-&lt;p&gt;在 Github Action 推出前，&lt;br&gt;
-Github最常搭配的CI服務很常是Travis CI，&lt;br&gt;
-相信大家有在Github看開源專案的時候，&lt;br&gt;
-看過有些reamd上的 &lt;strong&gt;build pass&lt;/strong&gt; 小貼紙，&lt;br&gt;
+&lt;p&gt;在 GitHub Action 推出前，&lt;br&gt;
+GitHub 最常搭配的CI服務應該是 Travis CI，&lt;br&gt;
+相信大家有在 GitHub 看開源專案的時候，&lt;br&gt;
+看過有些readme上的 &lt;strong&gt;build pass&lt;/strong&gt; 小貼紙，&lt;br&gt;
 通常都是Travis CI的。
-在近期的Github + Travis CI實際串接中，&lt;br&gt;
-發現 Github Action 比剛出的時候似乎改了不少，&lt;br&gt;
+在近期的 GitHub + Travis CI實際串接中，&lt;br&gt;
+發現 GitHub Action 比剛出的時候似乎改了不少，&lt;br&gt;
 想想編譯部落格不太需要繞一圈去搭配一個額外的CI/CD服務，&lt;br&gt;
-所以決定試試實際串接Github Action。  &lt;/p&gt;
+所以決定試試實際串接 GitHub Action。  &lt;/p&gt;
 &lt;h2&gt;前置準備&lt;/h2&gt;
 &lt;ol&gt;
-&lt;li&gt;一個Github帳號  &lt;/li&gt;
-&lt;li&gt;一個在Github上要佈署的專案  &lt;/li&gt;
+&lt;li&gt;一個 GitHub 帳號  &lt;/li&gt;
+&lt;li&gt;一個在 GitHub 上要佈署的專案  &lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;接下來是先確認 &lt;a href=&quot;https://github.com/features/actions#pricing-details&quot;&gt;Pricing&lt;/a&gt;  &lt;/p&gt;
-&lt;p&gt;目前GitHub Action很佛心的提供Open Source Project的免費使用，&lt;br&gt;
+&lt;p&gt;接下來是確認 &lt;a href=&quot;https://github.com/features/actions#pricing-details&quot;&gt;Pricing&lt;/a&gt;，&lt;br&gt;
+目前 GitHub Action 很佛心的提供 Open Source Project 的免費使用，&lt;br&gt;
 更佛心的點是相比Travis CI，&lt;br&gt;
 GitHub Action Free Plan直接提供了每個月2000分鐘的使用時間，&lt;br&gt;
 還提供了 GitHub Action Marketplace，&lt;br&gt;
-可以直接使用或是修改成你要的Action。&lt;/p&gt;
+可以方便套用別人寫好的 GitHub Action。&lt;/p&gt;
 &lt;h2&gt;設定&lt;/h2&gt;
 &lt;h3&gt;新增 perrsonal sccess token&lt;/h3&gt;
 &lt;p&gt;首先要新增 perrsonal sccess token，&lt;br&gt;
-到 GitHub的 Settings/Developer/settings/Personal access tokens 下產生一組新的token，&lt;br&gt;
+到 GitHub 的 Settings/Developer/settings/Personal access tokens 下產生一組新的token，&lt;br&gt;
 Note 打一組自己會記得的，&lt;br&gt;
-如果是public repo的話選 &lt;strong&gt;public_repo&lt;/strong&gt;，&lt;br&gt;
-如果是private repo的話要選整個repo權限，&lt;br&gt;
+如果是Public Repo 的話選 &lt;strong&gt;public_repo&lt;/strong&gt;，&lt;br&gt;
+如果是Private Repo 的話要選整個 Repo 權限，&lt;br&gt;
 記得產生完要記錄起來。  &lt;/p&gt;
 &lt;h3&gt;設定 Secrets&lt;/h3&gt;
-&lt;p&gt;到要自動發佈GitHub repo，&lt;br&gt;
-到 Settings/Secrets 新增一組New Secret，  &lt;/p&gt;
+&lt;p&gt;到要自動發佈 GitHub Repo的 Settings/Secrets 新增一組New Secret:  &lt;/p&gt;
 &lt;p&gt;Name:打自己看得懂意思的就好，等等會用到&lt;br&gt;
 Value:要填上剛剛產生的token  &lt;/p&gt;
 &lt;h2&gt;新增Action&lt;/h2&gt;
-&lt;p&gt;接著到要發佈repo的Action頁，&lt;br&gt;
+&lt;p&gt;接著到GitHub要發佈 Repo 的 Action 頁，&lt;br&gt;
 這裡我選擇套用&lt;a href=&quot;https://github.com/peaceiris/actions-gh-pages&quot;&gt;寫好的GitHub Action&lt;/a&gt;試試效果。&lt;/p&gt;
 &lt;p&gt;首先要先建立一個 .yml檔案，&lt;br&gt;
 根據 &lt;a href=&quot;https://docs.github.com/en/actions/configuring-and-managing-workflows/configuring-a-workflow#creating-a-workflow-file&quot;&gt;文件&lt;/a&gt; 要放在以下位置&lt;/p&gt;
@@ -55,30 +55,78 @@ Value:要填上剛剛產生的token  &lt;/p&gt;
       &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; master
 
 &lt;span class=&quot;token key atrule&quot;&gt;jobs&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;token key atrule&quot;&gt;build&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;token key atrule&quot;&gt;runs-on&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; ubuntu&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;latest
-    &lt;span class=&quot;token key atrule&quot;&gt;steps&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-      &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;uses&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; actions/checkout@v2
+  &lt;span class=&quot;token comment&quot;&gt;# 這個是 job_id&lt;/span&gt;
+  &lt;span class=&quot;token key atrule&quot;&gt;build&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; 
+    &lt;span class=&quot;token comment&quot;&gt;# 指定這個job要跑在什麼環境上 要注意 GitHub Runner 每次都會是乾淨環境&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;# 可以指定 self-hosted runner 然後宣告成 &lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;# [self-hosted, windows/linux/macOS,x86/x64/ARM/ARM64]&lt;/span&gt;
+    &lt;span class=&quot;token key atrule&quot;&gt;runs-on&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; ubuntu&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;latest 
+    &lt;span class=&quot;token comment&quot;&gt;# 每個job會有很多的任務，這些任務集合叫做Steps，會依序執行&lt;/span&gt;
+    &lt;span class=&quot;token key atrule&quot;&gt;steps&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; 
+      &lt;span class=&quot;token comment&quot;&gt;# uses 代表套用現成的action&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;uses&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; actions/checkout@v2 
       &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; npm install
       &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; npm run build
       &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Deploy
         &lt;span class=&quot;token key atrule&quot;&gt;uses&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; peaceiris/actions&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;gh&lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt;pages@v3
         &lt;span class=&quot;token key atrule&quot;&gt;with&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
           &lt;span class=&quot;token key atrule&quot;&gt;personal_token&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; $&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; secrets.剛剛設定的SecretName &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-          &lt;span class=&quot;token key atrule&quot;&gt;external_repository&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;username&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;/&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;username&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;.github.io &lt;span class=&quot;token comment&quot;&gt;# 發佈到github page 所在 repo &lt;/span&gt;
+          &lt;span class=&quot;token comment&quot;&gt;# 發佈到GitHub Page 所在 Repo &lt;/span&gt;
+          &lt;span class=&quot;token key atrule&quot;&gt;external_repository&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;username&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;/&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;username&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;.github.io           
           &lt;span class=&quot;token key atrule&quot;&gt;publish_branch&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; master
           &lt;span class=&quot;token key atrule&quot;&gt;publish_dir&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; ./public&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;都設定正確的話，&lt;br&gt;
-當master有新的push的時候，&lt;br&gt;
-就會自動跑設定好的GitHub Action，&lt;br&gt;
-就可以自動完成佈屬任務了。  &lt;/p&gt;
+當 master 有新的 push 的時候，&lt;br&gt;
+就會自動執行設定好的 GitHub Action，&lt;br&gt;
+live log可以在 Repo 下的 Actions 看當次 Workflow 的執行紀錄，&lt;br&gt;
+可以很方便看 Workflow 內每個 action 的執行時間，&lt;br&gt;
+以及當發生錯誤時是哪個環節出錯，&lt;br&gt;
+這樣一來就可以完成 push 到 master 後自動部署任務了。  &lt;/p&gt;
+&lt;h2&gt;GitHub Action Billing 計算方式&lt;/h2&gt;
+&lt;p&gt;前面有提到，&lt;br&gt;
+如果是Private Repo的話執行 GitHub Action 要付費，&lt;br&gt;
+但是 GitHub 有提供免費額度，&lt;br&gt;
+實際使用與剩餘時間是放在 &lt;a href=&quot;https://github.com/settings/billing&quot;&gt;帳單頁&lt;/a&gt;，&lt;br&gt;
+在實際串接GitHub Action中我並沒有很順利一次串接成功，&lt;br&gt;
+比對了一下實際使用時間，&lt;br&gt;
+以及以我串接的紀錄來說:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;#4 1m43
+#3 17s
+#2 17s
+#1 22s&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;這樣總時數是2m39s，&lt;br&gt;
+而實際帳單是 5 of 2000 min included ，&lt;br&gt;
+推測起來 GitHub Action 實際計算方式是一個 Action 最小執行時間單位為一分鐘，&lt;br&gt;
+所以算成 4m43，&lt;br&gt;
+在帳單頁直接顯示成 5m，&lt;br&gt;
+以上是依照結果推測。&lt;/p&gt;
+&lt;h2&gt;Job 平行處理與控制&lt;/h2&gt;
+&lt;p&gt;在這次的實作中其實只使用了一個job來完成整個部署，&lt;br&gt;
+沒有將CI 與 CD拆分，&lt;br&gt;
+更沒有程式碼的測試案例，&lt;br&gt;
+但其實在實際軟體開發流程中有些情況下會碰到一次部署需要執行多個任務，&lt;br&gt;
+比方像是跑單元測試跟原始碼品質檢查等等，&lt;br&gt;
+GitHub Action有支援平行處理job，&lt;br&gt;
+並且可以透過簡單的語法來控制流程，&lt;br&gt;
+比方像是:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;yml&quot;&gt;&lt;pre class=&quot;language-yml&quot;&gt;&lt;code class=&quot;language-yml&quot;&gt;&lt;span class=&quot;token key atrule&quot;&gt;jobs&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;token key atrule&quot;&gt;job1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;token key atrule&quot;&gt;job2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;    
+  &lt;span class=&quot;token key atrule&quot;&gt;job3&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;token key atrule&quot;&gt;needs&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;job1&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; job2&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;token key atrule&quot;&gt;job4&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;token key atrule&quot;&gt;needs&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;job3&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;透過 &lt;strong&gt;needs&lt;/strong&gt; 語法就能很好的控制task之間的相依性。  &lt;/p&gt;
 &lt;p&gt;ref:&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;a href=&quot;https://docs.github.com/en/actions&quot;&gt;https://docs.github.com/en/actions&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;</content:encoded></item><item><title><![CDATA[佈署Gatsby專案到Github Page]]></title><description><![CDATA[本文會提到 套用現成blog 樣板 佈署到github-page 透過travis-ci 自動佈屬 套用 Blog Starter Gatsby.js 有很多現成的blog starter， 有些Starter真的很不錯， 但我還是決定用官方的blog-starter…]]></description><link>https://kawwenwans.github.io/deploy-gatsby-blog-note/</link><guid isPermaLink="false">https://kawwenwans.github.io/deploy-gatsby-blog-note/</guid><pubDate>Sat, 22 Aug 2020 08:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;本文會提到&lt;/h2&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions&quot;&gt;https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/actions/starter-workflows/tree/master&quot;&gt;https://github.com/actions/starter-workflows/tree/master&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://jiaming0708.github.io/2020/05/21/github-action-and-package/&quot;&gt;https://jiaming0708.github.io/2020/05/21/github-action-and-package/&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</content:encoded></item><item><title><![CDATA[部署Gatsby專案到Github Page]]></title><description><![CDATA[本文會提到 套用現成blog 樣板 部署到github-page 透過travis-ci 自動佈屬 套用 Blog Starter Gatsby.js 有很多現成的blog starter， 有些Starter真的很不錯， 但我還是決定用官方的blog-starter…]]></description><link>https://kawwenwans.github.io/deploy-gatsby-blog-note/</link><guid isPermaLink="false">https://kawwenwans.github.io/deploy-gatsby-blog-note/</guid><pubDate>Sat, 22 Aug 2020 08:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;本文會提到&lt;/h2&gt;
 &lt;ol&gt;
 &lt;li&gt;套用現成blog 樣板&lt;/li&gt;
-&lt;li&gt;佈署到github-page&lt;/li&gt;
+&lt;li&gt;部署到github-page&lt;/li&gt;
 &lt;li&gt;透過travis-ci 自動佈屬&lt;/li&gt;
 &lt;/ol&gt;
 &lt;h2&gt;套用 Blog Starter&lt;/h2&gt;
@@ -159,7 +207,7 @@ ghpages&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span cl
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;&amp;quot;deploy:ghpage&amp;quot;: &amp;quot;npm run build &amp;amp;&amp;amp; node ./deploy-ghpage&amp;quot;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;最後執行&lt;/p&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;npm run deploy:ghpage&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;就可以佈署到gh-page的repo了。&lt;/p&gt;
+&lt;p&gt;就可以部署到gh-page的repo了。&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2&gt;CI/CD&lt;/h2&gt;
 &lt;p&gt;到目前為止我們只需要在 &lt;strong&gt;content/blog/&lt;/strong&gt; 新增 &lt;strong&gt;文章資料夾&lt;/strong&gt; 以及 編輯文章主體 &lt;strong&gt;index.md&lt;/strong&gt;，  &lt;/p&gt;
