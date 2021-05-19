@@ -1,4 +1,176 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[kevin wang's blog]]></title><description><![CDATA[這是凱文的部落格.]]></description><link>https://kawwenwans.github.io</link><generator>GatsbyJS</generator><lastBuildDate>Sun, 02 May 2021 14:56:45 GMT</lastBuildDate><item><title><![CDATA[雲端服務滾動升級的一種思路]]></title><description><![CDATA[傳統的服務部屬方案 一個軟體服務在線上都有機會面臨到需要升級的時候， 一般傳統的軟體升級方式可能是這樣的，   traditional-continue-deploy.svg Artifact 是可用於部屬的包 準備新的 Artifact 到 Server…]]></description><link>https://kawwenwans.github.io/a-way-to-rolling-update-your-service-on-cloud/</link><guid isPermaLink="false">https://kawwenwans.github.io/a-way-to-rolling-update-your-service-on-cloud/</guid><pubDate>Fri, 30 Apr 2021 08:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;傳統的服務部屬方案&lt;/h2&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[kevin wang's blog]]></title><description><![CDATA[這是凱文的部落格.]]></description><link>https://kawwenwans.github.io</link><generator>GatsbyJS</generator><lastBuildDate>Wed, 19 May 2021 05:41:30 GMT</lastBuildDate><item><title><![CDATA[AWS 上的 Provision 實作]]></title><description><![CDATA[在上一篇提到了 Provision 的概念， 這一篇會再提到 AWS 上實作 Provision 的一些細節與思路。 定義初始化腳本 在 Provision 的時候， 機器需要做一系列的指令來完成準備。 通常會透過開機腳本來達成。   開機腳本 在 Launch Templete…]]></description><link>https://kawwenwans.github.io/provision-implement-aws-sample/</link><guid isPermaLink="false">https://kawwenwans.github.io/provision-implement-aws-sample/</guid><pubDate>Sat, 08 May 2021 08:00:00 GMT</pubDate><content:encoded>&lt;p&gt;在&lt;a href=&quot;../a-way-to-rolling-update-your-service-on-cloud&quot;&gt;上一篇&lt;/a&gt;提到了 Provision 的概念，&lt;br&gt;
+這一篇會再提到 AWS 上實作 Provision 的一些細節與思路。&lt;/p&gt;
+&lt;h2&gt;定義初始化腳本&lt;/h2&gt;
+&lt;p&gt;在 Provision 的時候，&lt;br&gt;
+機器需要做一系列的指令來完成準備。&lt;br&gt;
+通常會透過開機腳本來達成。  &lt;/p&gt;
+&lt;h2&gt;開機腳本&lt;/h2&gt;
+&lt;p&gt;在 Launch Templete 中有 &lt;strong&gt;User Data&lt;/strong&gt; 的設定，&lt;br&gt;
+如果機器是指定依照 Launch Templete 開機，&lt;br&gt;
+就可以使用 User Data 內的指令達成執行開機腳本的目的。&lt;br&gt;
+我們可以將開機腳本放在 S3 上，&lt;br&gt;
+在機器執行 User Data 內的指令時，&lt;br&gt;
+從 S3 取得腳本執行指令。&lt;br&gt;
+可以參考如下的實作&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token shebang important&quot;&gt;#!/bin/bash -xe&lt;/span&gt;
+aws s3 &lt;span class=&quot;token function&quot;&gt;cp&lt;/span&gt; s3://&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;s3 bucket name&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;/main.sh main.sh --region &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;region&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;bash&lt;/span&gt; main.sh&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;共用 main.sh&lt;/h2&gt;
+&lt;p&gt;不同的服務可能會有不同的部屬方式。&lt;br&gt;
+但大致上都會有一些相同的流程，&lt;br&gt;
+比方像是安裝服務，&lt;br&gt;
+發送服務完成部屬的訊息等。&lt;br&gt;
+大概會像是這樣&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;安裝共用服務(e.g: filebeat) ...
+
+安裝線上服務 ...
+
+測試服務是否安裝完成 ...
+
+發送服務準備結果通知  ...&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;以上面的例子，&lt;br&gt;
+服務準備相關的動作可能會不同，&lt;br&gt;
+但安裝共用服務就會是相同的。&lt;br&gt;
+我們可以將 script 拆成 &lt;strong&gt;main&lt;/strong&gt; 以及 &lt;strong&gt;install&lt;/strong&gt; 兩個 Script，&lt;br&gt;
+install 實作各自服務的安裝，&lt;br&gt;
+並在 main 內執行各自的 install，&lt;br&gt;
+完成不同的部屬動作。  &lt;/p&gt;
+&lt;h2&gt;從共用 main 中取得不同的 install script&lt;/h2&gt;
+&lt;p&gt;要在共用的 main 中取得不同服務的 install script 的方向是&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;在 EC2 Tag 標示該服務的相關資訊&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;可以在 Launch templete 或是 AutoScaling Group 設定是否要 &lt;strong&gt;Tag new instance&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;在 main 中取得 Tag&lt;/li&gt;
+&lt;li&gt;取得服務對應的 install script&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在 &lt;a href=&quot;https://docs.aws.amazon.com/zh_tw/AWSEC2/latest/UserGuide/instancedata-data-retrieval.html&quot;&gt;AWS 的文件&lt;/a&gt;有提到，&lt;br&gt;
+在 AWS 上的機器內可以透過&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;curl &lt;a href=&quot;http://169.254.169.254/latest/dynamic/instance-identity/document&quot;&gt;http://169.254.169.254/latest/dynamic/instance-identity/document&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;取得類似以下的回傳&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;json&quot;&gt;&lt;pre class=&quot;language-json&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;accountId&quot;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;zzz&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;architecture&quot;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;x86_64&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;availabilityZone&quot;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;ap-northeast-1d&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;billingProducts&quot;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token null keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;devpayProductCodes&quot;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token null keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;marketplaceProductCodes&quot;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token null keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;imageId&quot;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;ami-xxx&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;instanceId&quot;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;i-xxx&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;instanceType&quot;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;t3a.medium&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;kernelId&quot;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token null keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;pendingTime&quot;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;2021-01-06T12:31:42Z&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;privateIp&quot;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;172.31.xx.xx&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;ramdiskId&quot;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token null keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;region&quot;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;ap-northeast-1&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;version&quot;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;2017-09-30&quot;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;取得 Instance-Id 後，&lt;br&gt;
+再透過 &lt;strong&gt;AWS Cli&lt;/strong&gt; 取得機器上的 Tag 資訊  &lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;aws ec2 describe-tags --filter &amp;quot;Name=resource-id,Values=${INSTANCE_ID}&amp;quot; --region ${REGION}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;json&quot;&gt;&lt;pre class=&quot;language-json&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;Tags&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;token property&quot;&gt;&quot;ResourceType&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;instance&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;token property&quot;&gt;&quot;ResourceId&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;i-xxx&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;token property&quot;&gt;&quot;Value&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;xxx&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;token property&quot;&gt;&quot;Key&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;ServiceName&quot;&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;        
+    &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;最後取得需要的 Tag 資訊，&lt;br&gt;
+main 裡面的實作可以參考以下&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;..&lt;/span&gt;.
+
+&lt;span class=&quot;token assign-left variable&quot;&gt;REGION&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token variable&quot;&gt;&lt;span class=&quot;token variable&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;curl&lt;/span&gt; -s http://169.254.169.254/latest/dynamic/instance-identity/document &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; jq .region -r&lt;span class=&quot;token variable&quot;&gt;`&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;token assign-left variable&quot;&gt;INSTANCE_ID&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token variable&quot;&gt;&lt;span class=&quot;token variable&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;curl&lt;/span&gt; -s http://169.254.169.254/latest/dynamic/instance-identity/document &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; jq .instanceId -r&lt;span class=&quot;token variable&quot;&gt;`&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;token assign-left variable&quot;&gt;TAGS&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;&lt;span class=&quot;token variable&quot;&gt;&lt;span class=&quot;token variable&quot;&gt;$(&lt;/span&gt;aws ec2 describe-tags --filter &lt;span class=&quot;token string&quot;&gt;&quot;Name=resource-id,Values=&lt;span class=&quot;token variable&quot;&gt;${INSTANCE_ID}&lt;/span&gt;&quot;&lt;/span&gt; --region $&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;REGION&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token variable&quot;&gt;)&lt;/span&gt;&lt;/span&gt;&quot;&lt;/span&gt;
+&lt;span class=&quot;token assign-left variable&quot;&gt;ServiceName&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token variable&quot;&gt;&lt;span class=&quot;token variable&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;echo&lt;/span&gt; $TAGS &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; jq -r &lt;span class=&quot;token string&quot;&gt;&apos;.Tags[] | select(.Key == &quot;ServiceName&quot;).Value&apos;&lt;/span&gt;&lt;span class=&quot;token variable&quot;&gt;`&lt;/span&gt;&lt;/span&gt;
+
+aws s3 &lt;span class=&quot;token function&quot;&gt;cp&lt;/span&gt; s3://&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;s3 bucket name&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;/&lt;span class=&quot;token variable&quot;&gt;$ServiceName&lt;/span&gt;/install.sh install.sh --region &lt;span class=&quot;token variable&quot;&gt;$REGION&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;bash&lt;/span&gt; install.sh
+
+&lt;span class=&quot;token punctuation&quot;&gt;..&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;..&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;自動擴展&lt;/h2&gt;
+&lt;p&gt;這樣的 Provision 方式，&lt;br&gt;
+讓服務部屬的準備可以完全自動化。&lt;br&gt;
+也可以讓自動擴展的設計上，&lt;br&gt;
+直接依賴 Provision 機制自動橫向擴展。&lt;br&gt;
+根據現有團隊的測試，&lt;br&gt;
+一台 T3.Medium，&lt;br&gt;
+在 Windows Server 的服務可以在 15 分鐘左右完成 Provision，&lt;br&gt;
+在 Linux Server 的服務可以在 7 分鐘左右完成 Provision。&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Logstash 的服務健康檢查機制]]></title><description><![CDATA[近期公司的 Kibana 在查詢 Log 的時候總覺得 Log 少了， 後來有一天 OP 人員告知查詢不到 Log 了， 花了一些時間追查才發現 Logstash 服務掛了。 修復完成後也開始計畫建立 Logstash 的 Health Check 機制。 Logstash…]]></description><link>https://kawwenwans.github.io/logstash-health-check/</link><guid isPermaLink="false">https://kawwenwans.github.io/logstash-health-check/</guid><pubDate>Sun, 02 May 2021 08:00:00 GMT</pubDate><content:encoded>&lt;p&gt;近期公司的 Kibana 在查詢 Log 的時候總覺得 Log 少了，&lt;br&gt;
+後來有一天 OP 人員告知查詢不到 Log 了，&lt;br&gt;
+花了一些時間追查才發現 Logstash 服務掛了。&lt;br&gt;
+修復完成後也開始計畫建立 Logstash 的 Health Check 機制。&lt;/p&gt;
+&lt;h2&gt;Logstash Health Check API&lt;/h2&gt;
+&lt;p&gt;根據官方的&lt;a href=&quot;https://www.elastic.co/guide/en/logstash/current/monitoring-logstash.html&quot;&gt;文章&lt;/a&gt;，  &lt;/p&gt;
+&lt;p&gt;透過呼叫&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;curl -XGET ‘localhost:9600/?pretty’&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;可以得到類似以下的回應&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;json&quot;&gt;&lt;pre class=&quot;language-json&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+   &lt;span class=&quot;token property&quot;&gt;&quot;host&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;skywalker&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+   &lt;span class=&quot;token property&quot;&gt;&quot;version&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;7.12.1&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+   &lt;span class=&quot;token property&quot;&gt;&quot;http_address&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;127.0.0.1:9600&quot;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;一個良好的監控…&lt;/h2&gt;
+&lt;p&gt;一個良好的監控至少要滿足&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;監控本身是高 SLA 的，不需要被監控&lt;/li&gt;
+&lt;li&gt;監控成本要低&lt;/li&gt;
+&lt;li&gt;監控設定要能夠進版控&lt;/li&gt;
+&lt;li&gt;監控要容易部屬與維護&lt;/li&gt;
+&lt;li&gt;要隨時能知道發生異常&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;由於公司的 Logstash 目前是在 AWS 雲端，&lt;br&gt;
+目前公司大部分服務的告緊機制也是使用 Route53 Health Check 服務，&lt;br&gt;
+所以決定先採用 AWS CLI 建立 Route53 Health Check 服務來完成告警機制。
+Route53 Health Check 本身沒有額外費用，&lt;br&gt;
+只存在 Route53 的費用，&lt;br&gt;
+Route53 費用可以參考 &lt;a href=&quot;https://aws.amazon.com/tw/route53/pricing/&quot;&gt;AWS 說明&lt;/a&gt;。&lt;/p&gt;
+&lt;h2&gt;建立 Route53 HealthCheck&lt;/h2&gt;
+&lt;p&gt;透過以下指令可以建立&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;aws route53 create-health-check --cli-incpu-json &amp;#39;{...}&amp;#39;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;題外話: AWS CLI 的使用技巧&lt;/h2&gt;
+&lt;p&gt;一開始在使用 AWS CLI 的時候，&lt;br&gt;
+有些參數會不知道怎麼填寫，&lt;br&gt;
+可以透過 AWS CLI 的 &lt;strong&gt;—generate-cli-skeleton&lt;/strong&gt; 參數產生 Json 骨架，&lt;br&gt;
+也可以透過 AWS CLI 的查詢指令來查詢帳號內線上的設定來幫助自己寫出正確的設定。&lt;/p&gt;
+&lt;h2&gt;Health Check 沒有通過!?&lt;/h2&gt;
+&lt;p&gt;建立完以後，&lt;br&gt;
+發現 Health Check 始終不通過，&lt;br&gt;
+在通過 Health Check 歷程中突然想到，&lt;br&gt;
+應該要將 Route53 Health Check 服務用到的 IP 加進 Security Group。&lt;/p&gt;
+&lt;h2&gt;添加 Route53 Health Check Service IP&lt;/h2&gt;
+&lt;p&gt;AWS 本身有提供&lt;a href=&quot;https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/route-53-ip-addresses.html&quot;&gt;各服務有用到的 IP 服務有用到的 IP &lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;透過以下指令可以建立 Security Group&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;aws ec2 modify-instance-attribute --cli-input-json &amp;#39;{...}&amp;#39;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;再來是建立 Security Group inbound rule&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;aws ec2 authorize-security-group-ingress --cli-input-json &amp;#39;{...}&amp;#39;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;掛載 Security Group 到 EC2 上&lt;/h2&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;aws ec2 modify-instance-attribute --cli-input-json &amp;#39;{...}&amp;#39;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;加上 Alarm Metric&lt;/h2&gt;
+&lt;p&gt;Alarm 是透過參數內的&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;    &amp;quot;Dimensions&amp;quot;: [
+        {
+            &amp;quot;Name&amp;quot;: &amp;quot;HealthCheckId&amp;quot;,
+            &amp;quot;Value&amp;quot;: &amp;quot;{Health Check ID}&amp;quot;
+        }
+    ]&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;來關聯 Health Check 服務 跟 Alarm 的。&lt;/p&gt;
+&lt;p&gt;使用以下指令來建立 Alarm&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;aws cloudwatch put-metric-alarm --cli-input-json &amp;#39;{...}&amp;#39;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;在建立 Alarm 可以考慮建立在不同的區域，&lt;br&gt;
+透過 &lt;strong&gt;—region {別的區域}&lt;/strong&gt; 參數就可以達成在指定的區域建立 Alarm。&lt;/p&gt;
+&lt;p&gt;Alarm Metric 需要建立 &lt;strong&gt;服務異常&lt;/strong&gt; 以及 &lt;strong&gt;服務恢復&lt;/strong&gt; 兩種指令。&lt;/p&gt;
+&lt;p&gt;做到這裡就建立了一套簡易的 Logstash Health Check 機制。&lt;/p&gt;</content:encoded></item><item><title><![CDATA[雲端服務滾動升級的一種思路]]></title><description><![CDATA[傳統的服務部屬方案 一個軟體服務在線上都有機會面臨到需要升級的時候， 一般傳統的軟體升級方式可能是這樣的，   traditional-continue-deploy.svg Artifact 是可用於部屬的包 準備新的 Artifact 到 Server…]]></description><link>https://kawwenwans.github.io/a-way-to-rolling-update-your-service-on-cloud/</link><guid isPermaLink="false">https://kawwenwans.github.io/a-way-to-rolling-update-your-service-on-cloud/</guid><pubDate>Fri, 30 Apr 2021 08:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;傳統的服務部屬方案&lt;/h2&gt;
 &lt;p&gt;一個軟體服務在線上都有機會面臨到需要升級的時候，&lt;br&gt;
 一般傳統的軟體升級方式可能是這樣的，  &lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;/e381376d52ab380332da4ca447d0fe21/traditional-continue-deploy.svg&quot; alt=&quot;traditional-continue-deploy.svg&quot;&gt;&lt;/p&gt;
@@ -92,7 +264,10 @@ Provisioning 的時間就會縮短。&lt;br&gt;
 &lt;li&gt;將 EC2 Instance 掛載在新的 Target Group 上&lt;/li&gt;
 &lt;li&gt;新的 Target Group 會開始進行 Health Check 檢查&lt;/li&gt;
 &lt;li&gt;EC2 Instance 會從 Artifact server 取得 Artifact&lt;/li&gt;
-&lt;li&gt;EC2 Instance 開始進行服務上線準備，以我所做過的實作，Script 會透過機器上的 Tag 來取得一些服務資訊，進而從 S3 取得對應的 Script 做後續的服務上線準備。&lt;/li&gt;
+&lt;li&gt;EC2 Instance 開始進行服務上線準備，&lt;br&gt;
+以我所做過的實作，&lt;br&gt;
+Script 會透過機器上的 Tag 來取得一些服務資訊，&lt;br&gt;
+進而從 S3 取得對應的 Script 做後續的服務上線準備。&lt;/li&gt;
 &lt;li&gt;新的 Target Group 會持續呼叫指定的 Health Check Endpoint&lt;/li&gt;
 &lt;li&gt;如果新的 Target Group 呼叫 Health Check Endpoint 回應成功，則可以將 Load Balancer 換上新的 Target Group，流量就會進到新的 Target Group。&lt;/li&gt;
 &lt;/ol&gt;
@@ -1178,10 +1353,10 @@ GitHub Action 有支援平行處理 job，&lt;br&gt;
 &lt;p&gt;透過 &lt;strong&gt;needs&lt;/strong&gt; 語法就能很好的控制 task 之間的相依性。  &lt;/p&gt;
 &lt;p&gt;ref:&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;&lt;a href=&quot;https://docs.github.com/en/actions&quot;&gt;https://docs.github.com/en/actions&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions&quot;&gt;https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://github.com/actions/starter-workflows/tree/master&quot;&gt;https://github.com/actions/starter-workflows/tree/master&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://jiaming0708.github.io/2020/05/21/github-action-and-package/&quot;&gt;https://jiaming0708.github.io/2020/05/21/github-action-and-package/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.github.com/en/actions&quot;&gt;GitHub Actions&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions&quot;&gt;Workflow syntax for GitHub Actions&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/actions/starter-workflows/tree/master&quot;&gt;Starter Workflows repo&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://jiaming0708.github.io/2020/05/21/github-action-and-package/&quot;&gt;使用 Github Action 作為 CI/CD 將 libraray 發佈到 Github Package&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;</content:encoded></item><item><title><![CDATA[部署 Gatsby 專案到 Github Page]]></title><description><![CDATA[本文會提到 套用現成 Blog 樣板 部署到 Github-page 透過 travis-ci 自動部署 套用 Blog Starter Gatsby.js 有很多現成的 blog starter， 有些 Starter 真的很不錯， 但我還是決定用官方的 blog…]]></description><link>https://kawwenwans.github.io/deploy-gatsby-blog-note/</link><guid isPermaLink="false">https://kawwenwans.github.io/deploy-gatsby-blog-note/</guid><pubDate>Sat, 22 Aug 2020 08:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;本文會提到&lt;/h2&gt;
 &lt;ol&gt;
 &lt;li&gt;套用現成 Blog 樣板&lt;/li&gt;
@@ -1372,9 +1547,9 @@ GITHUB_TOKEN |剛剛拿到的token  |&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 在使用上要注意一下。&lt;/p&gt;
 &lt;p&gt;ref: &lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;&lt;a href=&quot;https://www.gatsbyjs.com/docs/how-gatsby-works-with-github-pages/&quot;&gt;https://www.gatsbyjs.com/docs/how-gatsby-works-with-github-pages/&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://docs.travis-ci.com/user/languages/javascript-with-nodejs/&quot;&gt;https://docs.travis-ci.com/user/languages/javascript-with-nodejs/&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://docs.travis-ci.com/user/deployment/pages/&quot;&gt;https://docs.travis-ci.com/user/deployment/pages/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.gatsbyjs.com/docs/how-gatsby-works-with-github-pages/&quot;&gt;How Gatsby Works with GitHub Pages&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.travis-ci.com/user/languages/javascript-with-nodejs/&quot;&gt;Building a JavaScript and Node.js project&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.travis-ci.com/user/deployment/pages/&quot;&gt;GitHub Pages Deployment&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;</content:encoded></item><item><title><![CDATA[學習透過 Gatsby.js 架設部落格]]></title><description><![CDATA[本文會提到 一些對使用個人部落格的想法 (個人廢話) 開發環境的前置準備實際執行一輪的筆記 稍微了解 Gatsby.js 如何產生出一頁、模組以及 CSS…]]></description><link>https://kawwenwans.github.io/learn-gatsbyjs-to-start-blog-project/</link><guid isPermaLink="false">https://kawwenwans.github.io/learn-gatsbyjs-to-start-blog-project/</guid><pubDate>Mon, 17 Aug 2020 08:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;本文會提到&lt;/h2&gt;
 &lt;ol&gt;
 &lt;li&gt;一些對使用個人部落格的想法 &lt;del&gt;(個人廢話)&lt;/del&gt;&lt;/li&gt;
@@ -1649,9 +1824,8 @@ console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span cl
 &lt;hr&gt;
 &lt;p&gt;ref:&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;&lt;a href=&quot;https://www.gatsbyjs.org/tutorial/&quot;&gt;https://www.gatsbyjs.org/tutorial/&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;</content:encoded></item><item><title><![CDATA[.Net Span<T> API and Memory<T> API Study]]></title><description><![CDATA[Microsoft 在2018年一月的 MSDN Magazine 初步釋出了 Span API 的相關資訊，
-這組 API 目前在 System.Memory 的 MemoryExtensions 下 主要可以產生以下四種類別 Span<T> Memory<T…]]></description><link>https://kawwenwans.github.io/study-dotnet-span-api/</link><guid isPermaLink="false">https://kawwenwans.github.io/study-dotnet-span-api/</guid><pubDate>Sat, 27 Jun 2020 08:00:00 GMT</pubDate><content:encoded>&lt;p&gt;Microsoft 在2018年一月的 MSDN Magazine 初步釋出了 Span API 的相關資訊，
+&lt;li&gt;&lt;a href=&quot;https://www.gatsbyjs.org/tutorial/&quot;&gt;Tutorial: Learn how Gatsby works&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</content:encoded></item><item><title><![CDATA[.Net Span<T> API and Memory<T> API Study]]></title><description><![CDATA[Microsoft 在 2018 年一月的 MSDN Magazine 初步釋出了 Span API 的相關資訊， 這組 API 目前在 System.Memory 的 MemoryExtensions 下 主要可以產生以下四種類別 Span<T> Memory<T…]]></description><link>https://kawwenwans.github.io/study-dotnet-span-api/</link><guid isPermaLink="false">https://kawwenwans.github.io/study-dotnet-span-api/</guid><pubDate>Sat, 27 Jun 2020 08:00:00 GMT</pubDate><content:encoded>&lt;p&gt;Microsoft 在 2018 年一月的 MSDN Magazine 初步釋出了 Span API 的相關資訊，&lt;br&gt;
 這組 API 目前在 System.Memory 的 MemoryExtensions 下&lt;/p&gt;
 &lt;p&gt;主要可以產生以下四種類別&lt;/p&gt;
 &lt;ol&gt;
@@ -1691,7 +1865,7 @@ public ReadOnlyMemory&amp;lt;T&amp;gt; Slice(int start, int length);&lt;/code&gt
 &lt;p&gt;常見的字串分割操作&lt;/p&gt;
 &lt;h2&gt;String.SubString&lt;/h2&gt;
 &lt;h3&gt;使用 String SubString 做一百萬次 SubString&lt;/h3&gt;
-&lt;p&gt;&lt;a href=&quot;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/blob/master/1.NativeSubString/Program.cs&quot;&gt;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/blob/master/1.NativeSubString/Program.cs&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/blob/master/1.NativeSubString/Program.cs&quot;&gt;Github repo&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;使用時間:21ms&lt;/p&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;[System.Runtime]
     % Time in GC since last GC (%)                         4
@@ -1714,7 +1888,7 @@ public ReadOnlyMemory&amp;lt;T&amp;gt; Slice(int start, int length);&lt;/code&gt
     ThreadPool Thread Count                                2
     Working Set (MB)                                      23&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h3&gt;使用ReadOnlySpan&amp;#x3C;char&gt; 做一百萬次 Slice&lt;/h3&gt;
-&lt;p&gt;&lt;a href=&quot;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/blob/master/2.ReadOnlySpanSubString/Program.cs&quot;&gt;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/blob/master/2.ReadOnlySpanSubString/Program.cs&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/blob/master/2.ReadOnlySpanSubString/Program.cs&quot;&gt;Github repo&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;使用時間:22ms&lt;/p&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;[System.Runtime]
     % Time in GC since last GC (%)                         0
@@ -1737,7 +1911,7 @@ public ReadOnlyMemory&amp;lt;T&amp;gt; Slice(int start, int length);&lt;/code&gt
     ThreadPool Thread Count                                2
     Working Set (MB)                                      20&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h3&gt;使用 ReadOnlyMemory&amp;#x3C;char&gt; 做一百萬次 Slice&lt;/h3&gt;
-&lt;p&gt;&lt;a href=&quot;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/blob/master/3.ReadOnlyMemorySubString/Program.cs&quot;&gt;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/blob/master/3.ReadOnlyMemorySubString/Program.cs&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/blob/master/3.ReadOnlyMemorySubString/Program.cs&quot;&gt;Github repo&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;使用時間:33ms&lt;/p&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;[System.Runtime]
     % Time in GC since last GC (%)                         0
@@ -1761,7 +1935,7 @@ public ReadOnlyMemory&amp;lt;T&amp;gt; Slice(int start, int length);&lt;/code&gt
     Working Set (MB)                                      20&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h2&gt;String.Split&lt;/h2&gt;
 &lt;h3&gt;使用 String 做一百萬次 Split&lt;/h3&gt;
-&lt;p&gt;&lt;a href=&quot;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/tree/master/4.NativeSplit&quot;&gt;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/tree/master/4.NativeSplit&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/tree/master/4.NativeSplit&quot;&gt;Github repo&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;使用時間:177ms&lt;/p&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;[System.Runtime]
     % Time in GC since last GC (%)                         1
@@ -1784,7 +1958,7 @@ public ReadOnlyMemory&amp;lt;T&amp;gt; Slice(int start, int length);&lt;/code&gt
     ThreadPool Thread Count                                2
     Working Set (MB)                                      23&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h3&gt;使用 ReadOnlySpan&amp;#x3C;char&gt; 做一百萬次 Split 實作&lt;/h3&gt;
-&lt;p&gt;&lt;a href=&quot;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/blob/master/5.ReadOnlySpanSplit/Program.cs&quot;&gt;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/blob/master/5.ReadOnlySpanSplit/Program.cs&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/blob/master/5.ReadOnlySpanSplit/Program.cs&quot;&gt;Github repo&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;使用時間:222ms&lt;/p&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;[System.Runtime]
     % Time in GC since last GC (%)                         0
@@ -1807,7 +1981,7 @@ public ReadOnlyMemory&amp;lt;T&amp;gt; Slice(int start, int length);&lt;/code&gt
     ThreadPool Thread Count                                2
     Working Set (MB)                                      19&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;h3&gt;使用 ReadOnlyMemory&amp;#x3C;char&gt; 做一百萬次 Split 實作&lt;/h3&gt;
-&lt;p&gt;&lt;a href=&quot;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/blob/master/6.ReadOnlyMemorySplit/Program.cs&quot;&gt;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/blob/master/6.ReadOnlyMemorySplit/Program.cs&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/kaiwenwans/dotNetMemoryExtensionPractice/blob/master/6.ReadOnlyMemorySplit/Program.cs&quot;&gt;Github repo&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;使用時間:224ms&lt;/p&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;[System.Runtime]
     % Time in GC since last GC (%)                         0
@@ -1850,8 +2024,8 @@ public ReadOnlyMemory&amp;lt;T&amp;gt; Slice(int start, int length);&lt;/code&gt
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;public static bool TryParse (ReadOnlySpan&amp;lt;byte&amp;gt; source, out int value, out int bytesConsumed, char standardFormat = &amp;#39;\0&amp;#39;);&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;ref:&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/archive/msdn-magazine/2018/january/csharp-all-about-span-exploring-a-new-net-mainstay&quot;&gt;https://docs.microsoft.com/zh-tw/archive/msdn-magazine/2018/january/csharp-all-about-span-exploring-a-new-net-mainstay&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/dotnet/standard/memory-and-spans/memory-t-usage-guidelines&quot;&gt;https://docs.microsoft.com/zh-tw/dotnet/standard/memory-and-spans/memory-t-usage-guidelines&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/archive/msdn-magazine/2018/january/csharp-all-about-span-exploring-a-new-net-mainstay&quot;&gt;MSDN - C# - 全面了解 Span：探索新的 .NET 重要支援&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/dotnet/standard/memory-and-spans/memory-t-usage-guidelines&quot;&gt;MSDN - Memory&lt;T&gt; 與 Span&lt;T&gt; 使用指導方針&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;</content:encoded></item><item><title><![CDATA[.Net 記憶體管理的一些 study]]></title><description><![CDATA[這一季聽了許多同事在記憶體管理的一些討論， 決定花一些時間來讀官方文件以及動手實作看看。 在研究記憶體管理之前要先有相關監測工具， 我使用 .Net 內建的工具來做監測。 先執行一個簡單的 Hello world 並透過以下指令取得 process id…]]></description><link>https://kawwenwans.github.io/study-dotnet-memory-management/</link><guid isPermaLink="false">https://kawwenwans.github.io/study-dotnet-memory-management/</guid><pubDate>Fri, 26 Jun 2020 08:00:00 GMT</pubDate><content:encoded>&lt;p&gt;這一季聽了許多同事在記憶體管理的一些討論，&lt;br&gt;
 決定花一些時間來讀官方文件以及動手實作看看。&lt;/p&gt;
 &lt;p&gt;在研究記憶體管理之前要先有相關監測工具，&lt;br&gt;
@@ -1859,7 +2033,7 @@ public ReadOnlyMemory&amp;lt;T&amp;gt; Slice(int start, int length);&lt;/code&gt
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;dotnet tool install --global dotnet-trace
 dotnet tool install --global dotnet-counters&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;先執行一個簡單的 Hello world&lt;/p&gt;
-&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;    class Program
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;c#&quot;&gt;&lt;pre class=&quot;language-c#&quot;&gt;&lt;code class=&quot;language-c#&quot;&gt;    class Program
     {
         static void Main(string[] args)
         {
@@ -1868,10 +2042,10 @@ dotnet tool install --global dotnet-counters&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt
         }
     }&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;並透過以下指令取得 process id:&lt;/p&gt;
-&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;dotnet-trace ps&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;dotnet-trace &lt;span class=&quot;token function&quot;&gt;ps&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;然後找到要監測的 pid&lt;/p&gt;
 &lt;p&gt;接下來執行&lt;/p&gt;
-&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;dotnet-counters monitor --refresh-interval 1 -p {pid}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;dotnet-counters monitor --refresh-interval &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt; -p &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;pid&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;[System.Runtime]
     % Time in GC since last GC (%)                         0
     Allocation Rate / 1 sec (B)                        8,168
@@ -1893,7 +2067,7 @@ dotnet tool install --global dotnet-counters&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt
     ThreadPool Thread Count                                2
     Working Set (MB)                                      20&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;接下來要多產生一些物件&lt;/p&gt;
-&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;	class Program
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;c#&quot;&gt;&lt;pre class=&quot;language-c#&quot;&gt;&lt;code class=&quot;language-c#&quot;&gt;	class Program
 	{
 		static void Main(string[] args)
 		{
@@ -2077,7 +2251,7 @@ GCSettings.LargeObjectHeapCompactionMode&lt;br&gt;
 使物件傳遞時不須因為要轉換成小物件而需再建立一個小物件並重新賦值。  &lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;如&lt;/p&gt;
-&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;		public interface IAccountInfo
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;c#&quot;&gt;&lt;pre class=&quot;language-c#&quot;&gt;&lt;code class=&quot;language-c#&quot;&gt;		public interface IAccountInfo
 		{
 			string AccountId { get; set; }
 			string Password { get; set; }
@@ -2122,12 +2296,12 @@ GCSettings.LargeObjectHeapCompactionMode&lt;br&gt;
 &lt;/ol&gt;
 &lt;p&gt;ref:&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/dotnet/core/diagnostics/dotnet-trace&quot;&gt;https://docs.microsoft.com/zh-tw/dotnet/core/diagnostics/dotnet-trace&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/dotnet/core/diagnostics/dotnet-counters&quot;&gt;https://docs.microsoft.com/zh-tw/dotnet/core/diagnostics/dotnet-counters&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/aspnet/core/performance/memory?view=aspnetcore-3.1&quot;&gt;https://docs.microsoft.com/zh-tw/aspnet/core/performance/memory?view=aspnetcore-3.1&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/dotnet/core/diagnostics/debug-memory-leak&quot;&gt;https://docs.microsoft.com/zh-tw/dotnet/core/diagnostics/debug-memory-leak&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/dotnet/standard/garbage-collection/background-gc&quot;&gt;https://docs.microsoft.com/zh-tw/dotnet/standard/garbage-collection/background-gc&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/dotnet/api/system.gc.collect?view=netcore-3.1&quot;&gt;https://docs.microsoft.com/zh-tw/dotnet/api/system.gc.collect?view=netcore-3.1&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/dotnet/api/system.runtime.gcsettings.largeobjectheapcompactionmode?view=netcore-3.1&quot;&gt;https://docs.microsoft.com/zh-tw/dotnet/api/system.runtime.gcsettings.largeobjectheapcompactionmode?view=netcore-3.1&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/dotnet/standard/garbage-collection/workstation-server-gc&quot;&gt;https://docs.microsoft.com/zh-tw/dotnet/standard/garbage-collection/workstation-server-gc&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/dotnet/core/diagnostics/dotnet-trace&quot;&gt;MSDN dotnet-追蹤效能分析公用程式&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/dotnet/core/diagnostics/dotnet-counters&quot;&gt;MSDN (dotnet) 的計數器調查效能計數器&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/aspnet/core/performance/memory?view=aspnetcore-3.1&quot;&gt;MSDN ASP.NET Core 中的記憶體管理和垃圾收集 (GC)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/dotnet/core/diagnostics/debug-memory-leak&quot;&gt;MSDN 在 .NET Core 中偵測記憶體流失&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/dotnet/standard/garbage-collection/background-gc&quot;&gt;MSDN 背景垃圾收集&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/dotnet/api/system.gc.collect?view=netcore-3.1&quot;&gt;MSDN GC.Collect 方法&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/dotnet/api/system.runtime.gcsettings.largeobjectheapcompactionmode?view=netcore-3.1&quot;&gt;MSDN GCSettings.LargeObjectHeapCompactionMode 屬性&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.microsoft.com/zh-tw/dotnet/standard/garbage-collection/workstation-server-gc&quot;&gt;MSDN 工作站和伺服器記憶體回收&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;</content:encoded></item></channel></rss>
